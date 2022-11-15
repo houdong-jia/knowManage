@@ -1,13 +1,27 @@
 {
   "version": "1.0.0",
-  "lasttime": "2022-07-22 15:31:39",
-  "author": "申龙",
-  "className": "basics",
+  "lasttime": "2022-11-15 16:00:00",
+  "author": "西蒙",
+  "className": "knowManage",
   "module": [
     {
-      "classId": "idm.component.basics.text",
-      "comName": "文本",
-      "className": "IText",
+      "classId": "idm.component.knowmanage.icommontab",
+      "comName": "通用页签",
+      "className": "ICommonTab",
+      "comType": "common",
+      "comLangue": "vue"
+    },
+    {
+      "classId": "idm.component.knowmanage.isearchbar",
+      "comName": "搜索框",
+      "className": "ISearchBar",
+      "comType": "common",
+      "comLangue": "vue"
+    },
+    {
+      "classId": "idm.component.knowmanage.itemplatepanel",
+      "comName": "模板面板",
+      "className": "ITemplatePanel",
       "comType": "common",
       "comLangue": "vue"
     }

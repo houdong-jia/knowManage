@@ -1,4 +1,4 @@
-# idm-module-vue
+# idm-know-manage
 
 ## Project setup
 ```
