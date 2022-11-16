@@ -1,7 +1,7 @@
 {
-  "classId": "idm.component.knowmanage.icommontab",
-  "comName": "通用页签",
-  "className": "ICommonTab",
+  "classId": "idm.component.knowmanage.isearchbar",
+  "comName": "搜索框",
+  "className": "ISearchBar",
   "comType": "common",
   "comLangue": "vue",
   "compositeAttr": [
@@ -21,242 +21,17 @@
       "desc": "提供设置组件能达到展示效果的基本属性设置信息",
       "children": [
         {
-          "type": "radio",
-          "layoutType": "inline",
-          "text": "页签大小",
-          "bindKey": "size",
-          "dictionary": [
-            {
-              "label": "小",
-              "value": "small"
-            },
-            {
-              "label": "中",
-              "value": "default"
-            },
-            {
-              "label": "大",
-              "value": "large"
-            }
-          ],
-          "default": "large"
-        },
-        {
-          "type": "radio",
-          "layoutType": "inline",
-          "text": "风格样式",
-          "bindKey": "type",
-          "dictionary": [
-            {
-              "label": "line",
-              "value": "line"
-            },
-            {
-              "label": "card",
-              "value": "card"
-            }
-          ],
-          "default": "line"
-        },
-        {
-          "type": "inputNumber",
-          "layoutType": "inline",
-          "text": "页签间距",
-          "bindKey": "tabBarGutter",
-          "maxLength": 999,
-          "minLength": 0,
-          "default": 40
-        },
-        {
-          "type": "inputNumberUnit",
-          "layoutType": "inline",
-          "text": "左内边距",
-          "desc": "每个页签的左内边距，一般建议横向tab才设置",
-          "bindKey": "tabLeftPadding",
-          "dictionary": [
-            {
-              "label": "px",
-              "value": "px"
-            },
-            {
-              "label": "%",
-              "value": "%"
-            },
-            {
-              "label": "em",
-              "value": "em"
-            }
-          ],
-          "default": {
-            "inputVal": 0,
-            "selectVal": "px"
-          }
-        },
-        {
-          "type": "inputNumberUnit",
-          "layoutType": "inline",
-          "text": "右内边距",
-          "desc": "每个页签的右内边距，一般建议横向tab才设置",
-          "bindKey": "tabRightPadding",
-          "dictionary": [
-            {
-              "label": "px",
-              "value": "px"
-            },
-            {
-              "label": "%",
-              "value": "%"
-            },
-            {
-              "label": "em",
-              "value": "em"
-            }
-          ],
-          "default": {
-            "inputVal": 0,
-            "selectVal": "px"
-          }
-        },
-        {
-          "type": "inputNumberUnit",
-          "layoutType": "inline",
-          "text": "上内边距",
-          "desc": "每个页签的上内边距，一般建议竖向tab才设置",
-          "bindKey": "tabTopPadding",
-          "dictionary": [
-            {
-              "label": "px",
-              "value": "px"
-            },
-            {
-              "label": "%",
-              "value": "%"
-            },
-            {
-              "label": "em",
-              "value": "em"
-            }
-          ],
-          "default": {
-            "inputVal": 16,
-            "selectVal": "px"
-          }
-        },
-        {
-          "type": "inputNumberUnit",
-          "layoutType": "inline",
-          "text": "下内边距",
-          "desc": "每个页签的下内边距，一般建议竖向tab才设置",
-          "bindKey": "tabBottomPadding",
-          "dictionary": [
-            {
-              "label": "px",
-              "value": "px"
-            },
-            {
-              "label": "%",
-              "value": "%"
-            },
-            {
-              "label": "em",
-              "value": "em"
-            }
-          ],
-          "default": {
-            "inputVal": 16,
-            "selectVal": "px"
-          }
-        },
-        {
           "type": "switch",
           "layoutType": "inline",
-          "text": "切换动画",
-          "desc": "是否使用动画切换 Tabs，在 页签位置=顶部|底部 时有效",
-          "bindKey": "animated",
+          "text": "热词滚动",
+          "bindKey": "hotWordsLoop",
           "default": true
-        },
-        {
-          "type": "group",
-          "text": "分割线样式",
-          "desc": "提供设置组件的页签之间的分割线属性设置信息",
-          "children": [
-            {
-              "type": "switch",
-              "layoutType": "inline",
-              "text": "显示分割",
-              "bindKey": "tabShowDivider",
-              "default": false
-            },
-            {
-              "type": "inputNumber",
-              "layoutType": "inline",
-              "text": "高度占比",
-              "desc": "单位为%，默认为100撑满，只能填写基于tab高度的百分比",
-              "bindKey": "dividerHeightNumber",
-              "display": "@[tabShowDivider]",
-              "default": 100
-            },
-            {
-              "type": "inputNumber",
-              "layoutType": "inline",
-              "text": "偏移值(Y)",
-              "desc": "单位为%，默认为顶部对齐，只能填写基于tab高度的百分比",
-              "bindKey": "dividerTopNumber",
-              "display": "@[tabShowDivider]",
-              "default": 0
-            },
-            {
-              "type": "inputNumber",
-              "layoutType": "inline",
-              "text": "偏移值(X)",
-              "desc": "单位为px，默认线为文字的右边，如果要tab之间可以参考页签间距的二分之一的大小",
-              "bindKey": "dividerRightNumber",
-              "display": "@[tabShowDivider]",
-              "default": -16
-            },
-            {
-              "type": "colorPicker",
-              "layoutType": "inline",
-              "text": "分线颜色",
-              "bindKey": "dividerBgColor",
-              "display": "@[tabShowDivider]",
-              "placeholder": "请选择颜色",
-              "default": {
-                "hex": "#e8e8e8",
-                "hex8": "#e8e8e8FF"
-              }
-            }
-          ]
-        },
-        {
-          "type": "inlineGroup",
-          "text": "图标宽高",
-          "children": [
-            {
-              "type": "input",
-              "layoutType": "block",
-              "text": "图标宽",
-              "desc": "填写auto则为自适应，或者使用px、%、vw等单位，比如100%、100px、100vw等等",
-              "bindKey": "iconWidth",
-              "width": "60px",
-              "default": "16px"
-            },
-            {
-              "type": "input",
-              "layoutType": "block",
-              "text": "图标高",
-              "desc": "填写auto则为自适应，或者使用px、%、vh等单位，比如100%、100px、100vh等等",
-              "bindKey": "iconHeight",
-              "width": "60px",
-              "default": "16px"
-            }
-          ]
         }
       ]
     },
     {
       "type": "group",
-      "text": "样式设置",
+      "text": "外层容器样式设置",
       "desc": "点击？查看样式设置用法指南",
       "helpUrl": "",
       "children": [
@@ -473,6 +248,66 @@
           "layoutType": "block",
           "text": "边框",
           "bindKey": "border"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "text": "内层样式样式设置",
+      "desc": "点击？查看样式设置用法指南",
+      "helpUrl": "",
+      "children": [
+        {
+          "type": "box",
+          "layoutType": "block",
+          "text": "内外边距",
+          "bindKey": "innerBox"
+        },
+        {
+          "type": "inlineGroup",
+          "text": "宽高",
+          "children": [
+            {
+              "type": "input",
+              "layoutType": "block",
+              "text": "宽",
+              "desc": "填写auto则为自适应，或者使用px、%、vw等单位，比如100%、100px、100vw等等",
+              "bindKey": "innerWidth",
+              "width": "60px",
+              "default": "470px"
+            },
+            {
+              "type": "input",
+              "layoutType": "block",
+              "text": "高",
+              "desc": "填写auto则为自适应，或者使用px、%、vh等单位，比如100%、100px、100vh等等",
+              "bindKey": "innerHeight",
+              "width": "60px",
+              "default": "auto"
+            }
+          ]
+        },
+        {
+          "type": "colorPicker",
+          "layoutType": "inline",
+          "text": "背景色",
+          "bindKey": "innerBgColor",
+          "placeholder": "请选择颜色",
+          "default": {}
+        },
+        {
+          "type": "border",
+          "layoutType": "block",
+          "text": "边框",
+          "bindKey": "innerBorder"
+        },
+        {
+          "type": "colorPicker",
+          "layoutType": "inline",
+          "text": "按钮颜色",
+          "bindKey": "btnColor",
+          "placeholder": "请选择颜色",
+          "default": {}
         },
         {
           "type": "font",
@@ -483,8 +318,8 @@
         {
           "type": "font",
           "layoutType": "block",
-          "text": "选中文字",
-          "bindKey": "activeFont"
+          "text": "热词文字",
+          "bindKey": "hotWordFont"
         }
       ]
     },
@@ -570,16 +405,23 @@
         {
           "type": "dataSourceSelect",
           "layoutType": "inline",
-          "text": "数据源",
-          "desc": "页签数据的数据源",
+          "text": "热词数据",
+          "desc": "热词数据的数据源",
           "bindKey": "dataSource"
+        },
+        {
+          "type": "dataSourceSelect",
+          "layoutType": "inline",
+          "text": "搜索数据",
+          "desc": "搜索数据的数据源",
+          "bindKey": "searchDataSource"
         },
         {
           "type": "actionSelect",
           "layoutType": "block",
-          "text": "切换时动作",
-          "bindKey": "clickFunction",
-          "desc": "切换的时候会调用设置的自定义函数，接收参数为格式为{...自定义的}",
+          "text": "搜索时动作",
+          "bindKey": "searchFunction",
+          "desc": "搜索的时候会调用设置的自定义函数，接收参数为格式为{...自定义的}",
           "multiple": true
         },
         {
@@ -590,14 +432,14 @@
           "desc": "根据组件接收到的消息KEY来刷新数据",
           "default": "",
           "multiple": true,
-          "placeholder": "示例：tab",
+          "placeholder": "示例：hot",
           "ctrlAttrObject": {
             "mode": "tags"
           },
           "dictionary": [
             {
-              "label": "tab",
-              "value": "tab"
+              "label": "hot",
+              "value": "hot"
             }
           ]
         }

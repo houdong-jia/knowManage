@@ -11,25 +11,26 @@
     :idm-ctrl-id="moduleObject.id"
     class="i-common-tab-outer"
   >
-    <knowmanage-a-tabs :size="propData.size"
+    <knowmanage-a-tabs
+      :size="propData.size"
       :type="propData.type || 'line'"
-      :tabBarGutter="propData.tabBarGutter == 0 ? 0 : propData.tabBarGutter || null">
+      :tabBarGutter="
+        propData.tabBarGutter == 0 ? 0 : propData.tabBarGutter || null
+      "
+      @change="changeHandler"
+    >
       <knowmanage-a-tab-pane v-for="tab in tabList" :key="tab.id">
-        <span slot="tab" class="i-common-tab-icon" :class="{ 'ant-tabs-tab-divider': propData.tabShowDivider }">
+        <span
+          slot="tab"
+          class="i-common-tab-icon"
+          :class="{ 'ant-tabs-tab-divider': propData.tabShowDivider }"
+        >
           <img v-if="tab.icon" :src="IDM.url.getWebPath(tab.icon)" />
           <img v-else src="../assets/default_tab.png" />
           {{ tab.title }}
         </span>
       </knowmanage-a-tab-pane>
     </knowmanage-a-tabs>
-    <!-- <div class="idm-more-frame-drag-ontainer">
-      <div
-        class="drag_container"
-        idm-ctrl-inner
-        :idm-ctrl-id="moduleObject.id"
-        idm-container-index="1"
-      ></div>
-    </div> -->
   </div>
 </template>
 
@@ -60,29 +61,107 @@ export default {
         size: "large",
         animated: true,
         type: "line",
-        tabBarGutter: 20,
-        tabShowDivider:false,
+        tabBarGutter: 40,
+        tabShowDivider: false,
         dividerHeightNumber: 100,
         dividerTopNumber: 0,
-        dividerRightNumber: -16
+        dividerRightNumber: -16,
+        tabTopPadding: {
+          inputVal: 16,
+          selectVal: "px",
+        },
+        tabRightPadding: {
+          inputVal: 0,
+          selectVal: "px",
+        },
+        tabBottomPadding: {
+          inputVal: 16,
+          selectVal: "px",
+        },
+        tabLeftPadding: {
+          inputVal: 0,
+          selectVal: "px",
+        },
       },
       tabList: [],
+      // 数据源刷新key
+      dataSourceRefresh: []
     };
   },
   props: {},
   created() {
     this.moduleObject = this.$root.moduleObject;
+    this.convertThemeListAttrToStyleObject();
     this.convertAttrToStyleObject();
+    this.initPropData();
   },
   mounted() {},
   destroyed() {},
   methods: {
     /**
+     * 页签切换时的回调函数
+     */
+    changeHandler(activeKey) {
+      this.linkageHandler(activeKey);
+
+      // 切换自定义函数
+      const func = this.propData.clickFunction;
+      func &&
+        window[func[0].name] &&
+        window[func[0].name].call(this, {
+          ...this.commonParam(),
+          customParam: func[0].param,
+          _this: this,
+          activeKey,
+        });
+    },
+    /**
+     * 联动组件
+     */
+    linkageHandler(activeKey) {
+      if (
+        this.propData.linkageComponent &&
+        this.propData.linkageComponent.length > 0
+      ) {
+        const rangeModule = [];
+        this.propData.linkageComponent.forEach((item) => {
+          rangeModule.push(item.moduleId);
+        });
+        console.log(rangeModule,"发送")
+        IDM.broadcast.send({
+          type: "sendActiveTab",
+          message: {
+            activeKey,
+          },
+          rangeModule,
+        });
+      }
+    },
+    /**
      * 提供父级组件调用的刷新prop数据组件
      */
     propDataWatchHandle(propData) {
       this.propData = propData.compositeAttr || {};
+      this.convertThemeListAttrToStyleObject();
       this.convertAttrToStyleObject();
+      this.initPropData();
+    },
+    /**
+     * 初始化变量
+     */
+    initPropData(){
+      // 数据源解析
+      if (
+        this.propData.dataSource &&
+        this.propData.dataSource[0]
+      ) {
+        this.dataSourceRefresh = [];
+        const refreshJson = this.propData.dataSource[0].refreshJson;
+        refreshJson &&
+          JSON.parse(refreshJson).forEach((item) =>
+            this.dataSourceRefresh.push(item.key)
+          );
+      }
     },
     /**
      * 把属性转换成样式对象
@@ -267,10 +346,26 @@ export default {
               tabActiveStyleObject["text-decoration"] = element.fontDecoration;
               break;
             case "iconWidth":
-              iconStyleObject['width'] = element;
+              iconStyleObject["width"] = element;
               break;
             case "iconHeight":
-              iconStyleObject['height'] = element;
+              iconStyleObject["height"] = element;
+              break;
+            case "tabLeftPadding":
+              tabStyleObject["padding-left"] =
+                element.inputVal + element.selectVal;
+              break;
+            case "tabTopPadding":
+              tabStyleObject["padding-top"] =
+                element.inputVal + element.selectVal;
+              break;
+            case "tabRightPadding":
+              tabStyleObject["padding-right"] =
+                element.inputVal + element.selectVal;
+              break;
+            case "tabBottomPadding":
+              tabStyleObject["padding-bottom"] =
+                element.inputVal + element.selectVal;
               break;
           }
         }
@@ -286,8 +381,7 @@ export default {
         tabActiveStyleObject
       );
       window.IDM.setStyleToPageHead(
-        this.moduleObject.id +
-          " .i-common-tab-icon img",
+        this.moduleObject.id + " .i-common-tab-icon img",
         iconStyleObject
       );
 
@@ -311,49 +405,6 @@ export default {
           styleObject
         );
       }
-
-      //ant-tabs-tab  以tab为单位的
-      if (
-        this.propData.tabLeftPadding &&
-        this.propData.tabLeftPadding.inputVal + "" &&
-        this.propData.tabLeftPadding.selectVal
-      ) {
-        styleObject["padding-left"] =
-          this.propData.tabLeftPadding.inputVal +
-          this.propData.tabLeftPadding.selectVal;
-      }
-      if (
-        this.propData.tabRightPadding &&
-        this.propData.tabRightPadding.inputVal + "" &&
-        this.propData.tabRightPadding.selectVal
-      ) {
-        styleObject["padding-right"] =
-          this.propData.tabRightPadding.inputVal +
-          this.propData.tabRightPadding.selectVal;
-      }
-      if (
-        this.propData.tabTopPadding &&
-        this.propData.tabTopPadding.inputVal + "" &&
-        this.propData.tabTopPadding.selectVal
-      ) {
-        styleObject["padding-top"] =
-          this.propData.tabTopPadding.inputVal +
-          this.propData.tabTopPadding.selectVal;
-      }
-      if (
-        this.propData.tabBottomPadding &&
-        this.propData.tabBottomPadding.inputVal + "" &&
-        this.propData.tabBottomPadding.selectVal
-      ) {
-        styleObject["padding-bottom"] =
-          this.propData.tabBottomPadding.inputVal +
-          this.propData.tabBottomPadding.selectVal;
-      }
-      window.IDM.setStyleToPageHead(
-        this.moduleObject.id + " .ant-tabs-nav .ant-tabs-tab",
-        styleObject
-      );
-
 
       this.initData();
     },
@@ -379,6 +430,7 @@ export default {
       if (!this.moduleObject.env || this.moduleObject.env == "develop") {
         setTimeout(() => {
           this.tabList = mock;
+          if (this.tabList[0]) this.linkageHandler(this.tabList[0]);
         }, 500);
       } else if (this.moduleObject.env === "production") {
         let dataSource =
@@ -393,58 +445,15 @@ export default {
           },
           (res) => {
             console.log(res, "接口返回结果");
+            this.tabList = res;
+            if (this.tabList && this.tabList[0])
+              this.linkageHandler(this.tabList[0]);
           },
           (res) => {
             console.log(res, "请求失败");
           }
         );
       }
-    },
-    /**
-     * 通用的获取表达式匹配后的结果
-     */
-    getExpressData(dataName, dataFiled, resultData) {
-      //给defaultValue设置dataFiled的值
-      var _defaultVal = undefined;
-      if (dataFiled) {
-        var filedExp = dataFiled;
-        filedExp = dataName + (filedExp.startsWiths("[") ? "" : ".") + filedExp;
-        var dataObject = { IDM: window.IDM };
-        dataObject[dataName] = resultData;
-        _defaultVal = window.IDM.express.replace.call(
-          this,
-          "@[" + filedExp + "]",
-          dataObject
-        );
-      }
-      //对结果进行再次函数自定义
-      if (
-        this.propData.customFunction &&
-        this.propData.customFunction.length > 0
-      ) {
-        var params = this.commonParam();
-        var resValue = "";
-        try {
-          resValue =
-            window[this.propData.customFunction[0].name] &&
-            window[this.propData.customFunction[0].name].call(this, {
-              ...params,
-              ...this.propData.customFunction[0].param,
-              moduleObject: this.moduleObject,
-              expressData: _defaultVal,
-              interfaceData: resultData,
-            });
-        } catch (error) {}
-        _defaultVal = resValue;
-      }
-
-      return _defaultVal;
-    },
-    showThisModuleHandle() {
-      this.propData.defaultStatus = "default";
-    },
-    hideThisModuleHandle() {
-      this.propData.defaultStatus = "hidden";
     },
     /**
      * 组件通信：接收消息的方法
@@ -456,52 +465,63 @@ export default {
      *  isAcross:如果为true则代表发送来源是其他页面的组件，默认为false
      * } object
      */
-    receiveBroadcastMessage(object) {
-      console.log("组件收到消息", object);
-      if (object.type && object.type == "linkageShowModule") {
-        this.showThisModuleHandle();
-      } else if (object.type && object.type == "linkageHideModule") {
-        this.hideThisModuleHandle();
+    receiveBroadcastMessage(messageObject) {
+      console.log("通用页签组件收到消息", messageObject);
+      switch (messageObject.type) {
+        case "websocket":
+          if (this.propData.messageRefreshKey && messageObject.message) {
+            // 配置刷新key刷新
+            const messageData =
+              (typeof messageObject.message === "string" &&
+                JSON.parse(messageObject.message)) ||
+              messageObject.message;
+            const arr = Array.isArray(this.propData.messageRefreshKey)
+              ? this.propData.messageRefreshKey
+              : [this.propData.messageRefreshKey];
+            if (messageData.badgeType) {
+              if (
+                arr.includes(messageData.badgeType) ||
+                this.dataSourceRefresh.includes(messageData.badgeType)
+              ) {
+                this.initData();
+              }
+            }
+          }
+          break;
+        case "linkageReload":
+          this.propDataWatchHandle();
+          break;
       }
     },
     /**
-     * 组件通信：发送消息的方法
-     * @param {
-     *  type:"自己定义的，统一规定的type：linkageResult（组件联动传结果值）、linkageDemand（组件联动传需求值）、linkageReload（联动组件重新加载）
-     * 、linkageOpenDialog（打开弹窗）、linkageCloseDialog（关闭弹窗）、linkageShowModule（显示组件）、linkageHideModule（隐藏组件）、linkageResetDefaultValue（重置默认值）",
-     *  message:{实际的消息对象},
-     *  rangeModule:"为空发送给全部，根据配置的属性中设定的值（值的内容是组件的packageid数组），不取子表的，比如直接 this.$root.propData.compositeAttr["attrKey"]（注意attrKey是属性中定义的bindKey）,这里的格式为：['1','2']"",
-     *  className:"指定的组件类型，比如只给待办组件发送，然后再去过滤上面的值"
-     *  globalSend:如果为true则全站发送消息，注意全站rangeModule是无效的，只有className才有效，默认为false
-     * } object
+     * 主题颜色
      */
-    sendBroadcastMessage(object) {
-      window.IDM.broadcast && window.IDM.broadcast.send(object);
-    },
-    /**
-     * 交互功能：设置组件的上下文内容值
-     * @param {
-     *  type:"定义的类型，已知类型：pageCommonInterface（页面统一接口返回值）、"
-     *  key:"数据key标识，页面每个接口设置的数据集名称，方便识别获取自己需要的数据"
-     *  data:"数据集，内容为：字符串 or 数组 or 对象"
-     * }
-     */
-    setContextValue(object) {
-      console.log("统一接口设置的值", object);
-      if (object.type != "pageCommonInterface") {
+    convertThemeListAttrToStyleObject() {
+      const themeList = this.propData.themeList;
+      if (!themeList) {
         return;
       }
-      //这里使用的是子表，所以要循环匹配所有子表的属性然后再去设置修改默认值
-      if (object.key == this.propData.dataName) {
-        // this.propData.fontContent = this.getExpressData(this.propData.dataName,this.propData.dataFiled,object.data);
-        this.$set(
-          this.propData,
-          "fontContent",
-          this.getExpressData(
-            this.propData.dataName,
-            this.propData.dataFiled,
-            object.data
-          )
+      const themeNamePrefix =
+        IDM.setting &&
+        IDM.setting.applications &&
+        IDM.setting.applications.themeNamePrefix
+          ? IDM.setting.applications.themeNamePrefix
+          : "idm-theme-";
+      for (var i = 0; i < themeList.length; i++) {
+        var item = themeList[i];
+
+        IDM.setStyleToPageHead(
+          "." +
+            themeNamePrefix +
+            item.key +
+            " #" +
+            (this.moduleObject.packageid || "module_demo") +
+            " .ant-tabs-ink-bar",
+          {
+            "background-color": item.mainColor
+              ? IDM.hex8ToRgbaString(item.mainColor.hex8)
+              : "",
+          }
         );
       }
     },
@@ -511,8 +531,6 @@ export default {
 <style scoped lang="scss">
 .i-common-tab-outer {
   width: 100%;
-  height: 100%;
-  padding: 0 30px 20px 30px;
 
   ::v-deep .ant-tabs {
     .ant-tabs-tab {
@@ -527,6 +545,10 @@ export default {
 
     .ant-tabs-ink-bar {
       height: 3px;
+    }
+
+    .ant-tabs-bar {
+      margin-bottom: 0;
     }
 
     .ant-tabs-tab-divider {
@@ -545,6 +567,17 @@ export default {
     .ant-tabs-nav .ant-tabs-tab:last-child .ant-tabs-tab-divider {
       &::before {
         display: none;
+      }
+    }
+
+    &.ant-tabs-card {
+      .ant-tabs-card-bar .ant-tabs-nav-container {
+        height: auto;
+
+        .ant-tabs-tab {
+          height: auto;
+          line-height: initial;
+        }
       }
     }
   }
