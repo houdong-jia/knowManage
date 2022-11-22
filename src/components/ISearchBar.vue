@@ -11,7 +11,7 @@
     :idm-ctrl-id="moduleObject.id"
     class="i-search-bar-outer"
   >
-    <div class="i-search-bar-main" tabindex="1">
+    <div class="i-search-bar-main">
       <div class="i-search-bar-box">
         <span class="i-search-bar-box-icon"
           ><svg-icon icon-class="search"
@@ -24,7 +24,7 @@
         />
         <div class="i-search-bar-box-btn" @click="searchHanlder">搜索</div>
       </div>
-      <div class="i-search-bar-hotwords">
+      <div class="i-search-bar-hotwords" v-if="propData.showHotWords">
         <span
           v-for="(word, w) in hotWordList"
           :key="w"
@@ -84,6 +84,7 @@ export default {
       moduleObject: {},
       propData: this.$root.propData.compositeAttr || {
         hotWordsLoop: true,
+        showHotWords: true,
       },
       hotWordList: [],
       placeholder: "请搜索",
@@ -92,6 +93,7 @@ export default {
       dataSourceRefresh: [],
       searchRefresh: [],
       searchText: "",
+      activeTab:''
     };
   },
   props: {},
@@ -111,7 +113,7 @@ export default {
       if (this.propData.hotWordsLoop && !this.searchText)
         this.searchText = this.placeholder;
 
-      this.requestList(this.searchText);
+      this.requestTemplate();
 
       // 搜索自定义函数
       const func = this.propData.searchFunction;
@@ -146,13 +148,19 @@ export default {
         if (!dataSource) {
           return;
         }
+
+        const params = {
+          text:this.searchText,
+          tabId:this.activeTab
+        }
         IDM.datasource.request(
           dataSource.id,
           {
             moduleObject: this.moduleObject,
+            param: params,
           },
           (res) => {
-            console.log(res, "接口返回结果");
+            console.log(res, "模板接口返回结果");
             res && this.linkageHandler(res);
           },
           (res) => {
@@ -194,10 +202,10 @@ export default {
      */
     initPropData() {
       // 滚动热词
-      if(this.propData.hotWordsLoop){
+      if (this.propData.hotWordsLoop) {
         this.hotWordsLoop();
-      }else{
-        clearInterval(this.timer)
+      } else {
+        clearInterval(this.timer);
         this.placeholder = "请选择";
       }
 
@@ -276,7 +284,8 @@ export default {
               break;
             case "btnColor":
               if (element && element.hex8) {
-                btnStyleObject["background-color"] = element.hex8 + '!important';
+                btnStyleObject["background-color"] =
+                  element.hex8 + "!important";
               }
               break;
             case "innerBgColor":
@@ -423,7 +432,7 @@ export default {
                 innerStyleObject["border-top-style"] = element.border.top.style;
                 if (element.border.top.colors.hex8) {
                   innerStyleObject["border-top-color"] =
-                    element.border.top.colors.hex8 + '!important';
+                    element.border.top.colors.hex8 + "!important";
                 }
               }
               if (element.border.right.width > 0) {
@@ -433,7 +442,7 @@ export default {
                   element.border.right.style;
                 if (element.border.right.colors.hex8) {
                   innerStyleObject["border-right-color"] =
-                    element.border.right.colors.hex8 + '!important';
+                    element.border.right.colors.hex8 + "!important";
                 }
               }
               if (element.border.bottom.width > 0) {
@@ -443,7 +452,7 @@ export default {
                   element.border.bottom.style;
                 if (element.border.bottom.colors.hex8) {
                   innerStyleObject["border-bottom-color"] =
-                    element.border.bottom.colors.hex8 + '!important';
+                    element.border.bottom.colors.hex8 + "!important";
                 }
               }
               if (element.border.left.width > 0) {
@@ -453,7 +462,7 @@ export default {
                   element.border.left.style;
                 if (element.border.left.colors.hex8) {
                   innerStyleObject["border-left-color"] =
-                    element.border.left.colors.hex8 + '!important';
+                    element.border.left.colors.hex8 + "!important";
                 }
               }
 
@@ -519,11 +528,13 @@ export default {
         innerStyleObject
       );
       window.IDM.setStyleToPageHead(
-        this.moduleObject.id + " .i-search-bar-main .i-search-bar-box .i-search-bar-box-ipt",
+        this.moduleObject.id +
+          " .i-search-bar-main .i-search-bar-box .i-search-bar-box-ipt",
         inputStyleObject
       );
       window.IDM.setStyleToPageHead(
-        this.moduleObject.id + " .i-search-bar-main .i-search-bar-box .i-search-bar-box-btn",
+        this.moduleObject.id +
+          " .i-search-bar-main .i-search-bar-box .i-search-bar-box-btn",
         btnStyleObject
       );
       window.IDM.setStyleToPageHead(
@@ -532,7 +543,7 @@ export default {
         hotWordStyleObject
       );
 
-      this.initData();
+      this.propData.showHotWords && this.initData();
     },
     /**
      * 通用的url参数对象
@@ -564,14 +575,18 @@ export default {
         if (!dataSource) {
           return;
         }
+        const params = {
+          tabId:this.activeTab
+        }
         IDM.datasource.request(
           dataSource.id,
           {
             moduleObject: this.moduleObject,
+            param:params
           },
           (res) => {
-            console.log(res, "接口返回结果");
-            if(res){
+            console.log(res, "热词接口返回结果");
+            if (res) {
               this.hotWordList = res;
               this.propData.hotWordsLoop && this.hotWordsLoop();
             }
@@ -588,7 +603,7 @@ export default {
     hotWordsLoop() {
       clearInterval(this.timer);
       this.timer = null;
-      clearInterval()
+      clearInterval();
       if (this.hotWordList.length > 0) {
         this.placeholder = this.hotWordList[this.placeholderKey].title;
         this.timer = setInterval(() => {
@@ -629,20 +644,20 @@ export default {
                 arr.includes(messageData.badgeType) ||
                 this.dataSourceRefresh.includes(messageData.badgeType)
               ) {
-                this.initData();
+                this.propData.showHotWords && this.initData();
               }
               if (
                 arr.includes(messageData.badgeType) ||
                 this.searchRefresh.includes(messageData.badgeType)
               ) {
-                console.log("111111111");
+                this.requestTemplate();
               }
             }
           }
           break;
         case "linkageReload":
           this.propDataWatchHandle();
-          console.log("111111111");
+          this.requestTemplate();
           break;
         case "sendActiveTab":
           this.activeTab =
@@ -754,7 +769,7 @@ export default {
     }
 
     .i-search-bar-hotwords {
-      margin: 16px 0;
+      padding-top: 16px;
       padding: 0 70px 0 40px;
       display: flex;
       justify-content: space-around;

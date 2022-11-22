@@ -584,6 +584,7 @@ export default {
 
   .i-common-tab-icon img {
     width: 16px;
+    vertical-align: text-bottom;
   }
 }
 </style>

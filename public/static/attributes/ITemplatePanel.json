@@ -1,7 +1,7 @@
 {
-  "classId": "idm.component.knowmanage.isearchbar",
-  "comName": "搜索框",
-  "className": "ISearchBar",
+  "classId": "idm.component.knowmanage.itemplatepanel",
+  "comName": "模板面板",
+  "className": "ITemplatePanel",
   "comType": "common",
   "comLangue": "vue",
   "compositeAttr": [
@@ -21,19 +21,67 @@
       "desc": "提供设置组件能达到展示效果的基本属性设置信息",
       "children": [
         {
-          "type": "switch",
+          "type": "dataSourceFiledSelect",
           "layoutType": "inline",
-          "text": "开启热词",
-          "bindKey": "showHotWords",
-          "default": true
+          "text": "模板字段",
+          "desc": "当前模板面板对应的字段",
+          "bindKey": "field",
+          "default": "common"
         },
         {
           "type": "switch",
           "layoutType": "inline",
-          "text": "热词滚动",
-          "bindKey": "hotWordsLoop",
-          "default": true,
-          "display":"@[showHotWords]"
+          "text": "模板名称",
+          "desc": "是否显示面板左侧文字描述",
+          "bindKey": "showTitle",
+          "default": true
+        },
+        {
+          "type": "input",
+          "layoutType": "inline",
+          "text": "名称文字",
+          "desc": "面板左侧文字描述内容",
+          "bindKey": "title",
+          "default": "公共模板",
+          "display": "@[showTitle]"
+        },
+        {
+          "type": "switch",
+          "layoutType": "inline",
+          "text": "显示页签",
+          "desc": "是否显示面板页面切换",
+          "bindKey": "showTab",
+          "default": true
+        },
+        {
+          "type": "select",
+          "layoutType": "inline",
+          "text": "显示方式",
+          "desc": "分页按钮的显示方式",
+          "bindKey": "pagingBtn",
+          "dictionary": [
+            {
+              "label": "始终不显示",
+              "value": "hidden"
+            },
+            {
+              "label": "始终显示",
+              "value": "show"
+            },
+            {
+              "label": "鼠标移入显示",
+              "value": "hover"
+            }
+          ],
+          "default": "show"
+        },
+        {
+          "type": "switch",
+          "layoutType": "inline",
+          "text": "新增模板",
+          "desc": "是否显示新增模板",
+          "bindKey": "showAdd",
+          "default": false
         }
       ]
     },
@@ -69,7 +117,7 @@
               "desc": "填写auto则为自适应，或者使用px、%、vh等单位，比如100%、100px、100vh等等",
               "bindKey": "height",
               "width": "60px",
-              "default": "auto"
+              "default": "248px"
             }
           ]
         },
@@ -252,10 +300,36 @@
           ]
         },
         {
+          "type": "input",
+          "layoutType": "inline",
+          "text": "边框阴影",
+          "bindKey": "boxShadow",
+          "default": "0px 0 5px 0px rgba(0, 0, 0, 0.1)"
+        },
+        {
           "type": "border",
           "layoutType": "block",
           "text": "边框",
           "bindKey": "border"
+        },
+        {
+          "type": "colorPicker",
+          "layoutType": "inline",
+          "text": "标题背景色",
+          "bindKey": "titleBgColor",
+          "placeholder": "请选择颜色"
+        },
+        {
+          "type": "font",
+          "layoutType": "block",
+          "text": "标题文字",
+          "bindKey": "titleFont"
+        },
+        {
+          "type": "font",
+          "layoutType": "block",
+          "text": "页签文字",
+          "bindKey": "tabFont"
         }
       ]
     },
@@ -269,7 +343,17 @@
           "type": "box",
           "layoutType": "block",
           "text": "内外边距",
-          "bindKey": "innerBox"
+          "bindKey": "innerBox",
+          "default": {
+            "marginTopVal": "",
+            "marginRightVal": "10px",
+            "marginBottomVal": "",
+            "marginLeftVal": "10px",
+            "paddingTopVal": "",
+            "paddingRightVal": "",
+            "paddingBottomVal": "",
+            "paddingLeftVal": ""
+          }
         },
         {
           "type": "inlineGroup",
@@ -282,7 +366,7 @@
               "desc": "填写auto则为自适应，或者使用px、%、vw等单位，比如100%、100px、100vw等等",
               "bindKey": "innerWidth",
               "width": "60px",
-              "default": "470px"
+              "default": "176px"
             },
             {
               "type": "input",
@@ -291,7 +375,7 @@
               "desc": "填写auto则为自适应，或者使用px、%、vh等单位，比如100%、100px、100vh等等",
               "bindKey": "innerHeight",
               "width": "60px",
-              "default": "auto"
+              "default": "186px"
             }
           ]
         },
@@ -301,7 +385,10 @@
           "text": "背景色",
           "bindKey": "innerBgColor",
           "placeholder": "请选择颜色",
-          "default": {}
+          "default": {
+            "hex": "#FFFFFF",
+            "hex8": "#FFFFFFFF"
+          }
         },
         {
           "type": "border",
@@ -310,24 +397,17 @@
           "bindKey": "innerBorder"
         },
         {
-          "type": "colorPicker",
+          "type": "input",
           "layoutType": "inline",
-          "text": "按钮颜色",
-          "bindKey": "btnColor",
-          "placeholder": "请选择颜色",
-          "default": {}
+          "text": "边框阴影",
+          "bindKey": "innerBoxShadow",
+          "default": "0px -4px 8px 0px rgba(0, 0, 0, 0.06)"
         },
         {
           "type": "font",
           "layoutType": "block",
           "text": "文字",
           "bindKey": "font"
-        },
-        {
-          "type": "font",
-          "layoutType": "block",
-          "text": "热词文字",
-          "bindKey": "hotWordFont"
         }
       ]
     },
@@ -343,6 +423,10 @@
           "mainColor": {
             "hex": "#0091FF",
             "hex8": "#0091FFFF"
+          },
+          "minorColor": {
+            "hex": "#e9f7ff",
+            "hex8": "#e9f7ffFF"
           }
         },
         {
@@ -350,6 +434,10 @@
           "mainColor": {
             "hex": "#E21A1A",
             "hex8": "#E21A1AFF"
+          },
+          "minorColor": {
+            "hex": "#f3caca",
+            "hex8": "#f3cacaFF"
           }
         },
         {
@@ -357,6 +445,10 @@
           "mainColor": {
             "hex": "#0EAF64",
             "hex8": "#0EAF64FF"
+          },
+          "minorColor": {
+            "hex": "#38e996",
+            "hex8": "#38e996FF"
           }
         }
       ],
@@ -395,6 +487,15 @@
           "desc": "主题的主要颜色",
           "placeholder": "请选择颜色",
           "display": "@[key]"
+        },
+        {
+          "type": "colorPicker",
+          "layoutType": "inline",
+          "text": "次要颜色",
+          "bindKey": "minorColor",
+          "desc": "主题的次要颜色",
+          "placeholder": "请选择颜色",
+          "display": "@[key]"
         }
       ]
     },
@@ -404,53 +505,20 @@
       "desc": "点击？查看高级设置用法指南",
       "children": [
         {
-          "type": "pageModuleSelect",
+          "type": "actionSelect",
           "layoutType": "block",
-          "text": "联动组件",
-          "desc": "需要联动的组件",
-          "bindKey": "linkageComponent",
-          "multiple":true
-        },
-        {
-          "type": "dataSourceSelect",
-          "layoutType": "inline",
-          "text": "热词数据",
-          "desc": "热词数据的数据源",
-          "bindKey": "dataSource"
-        },
-        {
-          "type": "dataSourceSelect",
-          "layoutType": "inline",
-          "text": "搜索数据",
-          "desc": "搜索数据的数据源",
-          "bindKey": "searchDataSource"
+          "text": "点击模板自定义函数",
+          "bindKey": "clickFunction",
+          "desc": "点击模板的时候会调用设置的自定义函数，接收参数为格式为{...自定义的}",
+          "multiple": true
         },
         {
           "type": "actionSelect",
           "layoutType": "block",
-          "text": "搜索时动作",
-          "bindKey": "searchFunction",
-          "desc": "搜索的时候会调用设置的自定义函数，接收参数为格式为{...自定义的}",
+          "text": "点击新建模板自定义函数",
+          "bindKey": "addFunction",
+          "desc": "点击模板的时候会调用设置的自定义函数，接收参数为格式为{...自定义的}",
           "multiple": true
-        },
-        {
-          "type": "select",
-          "layoutType": "inline",
-          "text": "刷新KEY",
-          "bindKey": "messageRefreshKey",
-          "desc": "根据组件接收到的消息KEY来刷新数据",
-          "default": "",
-          "multiple": true,
-          "placeholder": "示例：hot",
-          "ctrlAttrObject": {
-            "mode": "tags"
-          },
-          "dictionary": [
-            {
-              "label": "hot",
-              "value": "hot"
-            }
-          ]
         }
       ]
     }
