@@ -769,8 +769,7 @@ export default {
     }
 
     .i-search-bar-hotwords {
-      padding-top: 16px;
-      padding: 0 70px 0 40px;
+      padding: 16px 70px 0 40px;
       display: flex;
       justify-content: space-around;
 
