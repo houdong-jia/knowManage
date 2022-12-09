@@ -24,6 +24,20 @@
       "className": "ITemplatePanel",
       "comType": "common",
       "comLangue": "vue"
+    },
+    {
+      "classId": "idm.component.knowmanage.ipersonpanel",
+      "comName": "个人面板",
+      "className": "IPersonPanel",
+      "comType": "common",
+      "comLangue": "vue"
+    },
+    {
+      "classId": "idm.component.knowmanage.inewknow",
+      "comName": "最新知识",
+      "className": "INewKnow",
+      "comType": "common",
+      "comLangue": "vue"
     }
   ]
 }

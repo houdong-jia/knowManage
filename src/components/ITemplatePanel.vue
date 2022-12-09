@@ -296,22 +296,6 @@ export default {
   },
   props: {},
   watch: {
-    activeTab(nVal) {
-      this.infoList.forEach((item) => {
-        if (item.id === nVal) {
-          this.curList = item.list;
-          if (this.propData.showAdd && !this.curList[0].isAdd)
-            this.curList.unshift({ isAdd: true });
-          if (!this.propData.showAdd && this.curList[0].isAdd)
-            this.curList.shift();
-          this.pageIndex = 0;
-          if (this.pageSize) {
-            this.maxPageIndex = parseInt(this.curList.length / this.pageSize);
-            if (this.curList.length % this.pageSize > 0) this.maxPageIndex + 1;
-          }
-        }
-      });
-    },
   },
   computed: {
     // 当前页面展示列表
@@ -363,6 +347,22 @@ export default {
   mounted() {},
   destroyed() {},
   methods: {
+    updateCurList(){
+      this.infoList.forEach((item) => {
+        if (item.id === this.activeTab) {
+          this.curList = item.list;
+          if (this.propData.showAdd && !this.curList[0].isAdd)
+            this.curList.unshift({ isAdd: true });
+          if (!this.propData.showAdd && this.curList[0].isAdd)
+            this.curList.shift();
+          this.pageIndex = 0;
+          if (this.pageSize) {
+            this.maxPageIndex = parseInt(this.curList.length / this.pageSize);
+            if (this.curList.length % this.pageSize > 0) this.maxPageIndex + 1;
+          }
+        }
+      });
+    },
     /**
      * 点击模板
      */
@@ -401,38 +401,13 @@ export default {
      */
     toggleTab(tab) {
       this.activeTab = tab.id;
+      this.updateCurList()
     },
     /**
      * 分页切换
      */
     togglePage(type) {
       type === "lr" ? this.pageIndex++ : this.pageIndex--;
-    },
-    /**
-     * 请求模板数据
-     */
-    requestTemplate() {
-      if (!this.moduleObject.env || this.moduleObject.env == "develop") {
-      } else if (this.moduleObject.env === "production") {
-        let dataSource =
-          this.propData.searchDataSource && this.propData.searchDataSource[0];
-        if (!dataSource) {
-          return;
-        }
-        IDM.datasource.request(
-          dataSource.id,
-          {
-            moduleObject: this.moduleObject,
-          },
-          (res) => {
-            console.log(res, "接口返回结果");
-            res && this.linkageHandler(res);
-          },
-          (res) => {
-            console.log(res, "请求失败");
-          }
-        );
-      }
     },
     /**
      * 联动组件
@@ -895,14 +870,15 @@ export default {
             if (!empty) {
               this.isShow = true;
               this.infoList = result;
-              this.activeTab =
-                this.infoList && this.infoList[0] && this.infoList[0].id;
+              this.activeTab = this.infoList && this.infoList[0] && this.infoList[0].id;
+              this.updateCurList();
             } else {
               this.isShow = false;
             }
           } else {
             this.isShow = false;
           }
+          this.$forceUpdate()
           break;
       }
     },

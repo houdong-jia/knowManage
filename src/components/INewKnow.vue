@@ -9,85 +9,134 @@
     idm-ctrl="idm_module"
     :id="moduleObject.id"
     :idm-ctrl-id="moduleObject.id"
-    class="i-common-tab-outer"
+    class="i-new-know-outer"
+    ref="module_ref"
+    :style="{ height: moduleHeight + 'px' }"
   >
-    <knowmanage-a-tabs
-      v-model="activeKey"
-      :size="propData.size"
-      :type="propData.type || 'line'"
-      :tabBarGutter="
-        propData.tabBarGutter == 0 ? 0 : propData.tabBarGutter || null
-      "
-      @change="changeHandler"
-    >
-      <knowmanage-a-tab-pane v-for="tab in tabList" :key="tab.id">
-        <span
-          slot="tab"
-          class="i-common-tab-icon"
-          :class="{ 'ant-tabs-tab-divider': propData.tabShowDivider }"
-        >
-          <img v-if="tab.icon" :src="IDM.url.getWebPath(tab.icon)" />
-          <img v-else src="../assets/default_tab.png" />
-          {{ tab.title }}
-        </span>
-      </knowmanage-a-tab-pane>
-    </knowmanage-a-tabs>
+    <div class="i-new-know-header">
+      <h3>{{ propData.title }}</h3>
+    </div>
+    <div class="i-new-know-container">
+      <div
+        class="i-new-know-con"
+        v-for="(item, index) in infoList"
+        :key="index"
+      >
+        <div class="i-new-know-avatar">
+          <img v-if="item.avatar" :src="IDM.url.getWebPath(item.avatar)" />
+          <img
+            v-else
+            :src="
+              IDM.url.getModuleAssetsWebPath(
+                require('../assets/default_avatar.png'),
+                moduleObject
+              )
+            "
+          />
+        </div>
+        <div class="i-new-know-detail">
+          <div class="detail-username">{{ item.userName }}</div>
+          <div class="detail-medal">
+            <div
+              class="medal-label"
+              v-for="(label, i) in propData.labelList"
+              :key="i"
+              :style="`width:${
+                label.width ? label.width.inputVal + label.width.selectVal : ''
+              }`"
+            >
+              <span
+                :style="`color:${
+                  IDM.hex8ToRgbaString &&
+                  label.iconColor &&
+                  IDM.hex8ToRgbaString(label.iconColor.hex8)
+                };font-size:${
+                label.iconSize ? label.iconSize.inputVal + label.iconSize.selectVal : ''
+              }`"
+              >
+                <svg
+                  v-if="label.icon && label.icon.length > 0"
+                  class="idm_filed_svg_icon"
+                  aria-hidden="true"
+                >
+                  <use :xlink:href="`#${label.icon && label.icon[0]}`"></use>
+                </svg>
+                <svg-icon v-else icon-class="honor" /></span
+              ><i>{{ item[label.field] }}</i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 const mock = [
   {
-    title: "word文档",
-    icon: "",
-    id: "1001",
+    avatar: "",
+    userName: "张三",
+    honor: "xx小能手",
+    integral: "342",
   },
   {
-    title: "excel表格",
-    icon: "",
-    id: "1002",
+    avatar: "",
+    userName: "张三",
+    honor: "xx小能手",
+    integral: "2",
   },
   {
-    title: "xx文档",
-    icon: "",
-    id: "1003",
+    avatar: "",
+    userName: "张三",
+    honor: "xx小能手",
+    integral: "342",
+  },
+  {
+    avatar: "",
+    userName: "张三",
+    honor: "xx小能手",
+    integral: "342",
   },
 ];
 export default {
-  name: "ICommonTab",
+  name: "INewKnow",
   data() {
     return {
       moduleObject: {},
       propData: this.$root.propData.compositeAttr || {
-        size: "large",
-        animated: true,
-        type: "line",
-        tabBarGutter: 40,
-        tabShowDivider: false,
-        dividerHeightNumber: 100,
-        dividerTopNumber: 0,
-        dividerRightNumber: -16,
-        tabTopPadding: {
-          inputVal: 16,
-          selectVal: "px",
-        },
-        tabRightPadding: {
-          inputVal: 0,
-          selectVal: "px",
-        },
-        tabBottomPadding: {
-          inputVal: 16,
-          selectVal: "px",
-        },
-        tabLeftPadding: {
-          inputVal: 0,
-          selectVal: "px",
-        },
+        title: "最新知识",
+        labelList: [
+          {
+            field: "honor",
+            iconColor: {
+              hex: "#F7B500",
+              hex8: "#F7B500FF",
+            },
+            iconSize: {
+              inputVal: 16,
+              selectVal: "px",
+            },
+            width: {
+              inputVal: 80,
+              selectVal: "px",
+            },
+          },
+          {
+            field: "integral",
+            iconColor: {
+              hex: "#0079FF",
+              hex8: "#0079FFFF",
+            },
+            width: {
+              inputVal: 50,
+              selectVal: "px",
+            },
+          },
+        ],
       },
-      tabList: [],
-      // 数据源刷新key
       dataSourceRefresh: [],
-      activeKey:""
+      moduleHeight: 304,
+      infoList: [],
     };
   },
   props: {},
@@ -96,49 +145,14 @@ export default {
     this.convertThemeListAttrToStyleObject();
     this.convertAttrToStyleObject();
     this.initPropData();
+
+    this.$nextTick(() => {
+      this.resizeContentWrapperHeight();
+    });
   },
   mounted() {},
   destroyed() {},
   methods: {
-    /**
-     * 页签切换时的回调函数
-     */
-    changeHandler(activeKey) {
-      this.linkageHandler(activeKey);
-
-      // 切换自定义函数
-      const func = this.propData.clickFunction;
-      func &&
-        window[func[0].name] &&
-        window[func[0].name].call(this, {
-          ...this.commonParam(),
-          customParam: func[0].param,
-          _this: this,
-          activeKey,
-        });
-    },
-    /**
-     * 联动组件
-     */
-    linkageHandler(activeKey) {
-      if (
-        this.propData.linkageComponent &&
-        this.propData.linkageComponent.length > 0
-      ) {
-        const rangeModule = [];
-        this.propData.linkageComponent.forEach((item) => {
-          rangeModule.push(item.moduleId);
-        });
-        console.log(rangeModule,"发送")
-        IDM.broadcast.send({
-          type: "sendActiveTab",
-          message: {
-            activeKey,
-          },
-          rangeModule,
-        });
-      }
-    },
     /**
      * 提供父级组件调用的刷新prop数据组件
      */
@@ -147,16 +161,17 @@ export default {
       this.convertThemeListAttrToStyleObject();
       this.convertAttrToStyleObject();
       this.initPropData();
+
+      this.$nextTick(() => {
+        this.resizeContentWrapperHeight();
+      });
     },
     /**
      * 初始化变量
      */
-    initPropData(){
+    initPropData() {
       // 数据源解析
-      if (
-        this.propData.dataSource &&
-        this.propData.dataSource[0]
-      ) {
+      if (this.propData.dataSource && this.propData.dataSource[0]) {
         this.dataSourceRefresh = [];
         const refreshJson = this.propData.dataSource[0].refreshJson;
         refreshJson &&
@@ -166,13 +181,78 @@ export default {
       }
     },
     /**
+     * 根据属性heightType确定是使用固定高度还是自动适应外层的高度
+     * 如果使用固定高度则取设置的固定高度
+     * 如果使用自适应外层高度则需要外层传过来高度
+     * 不管上述使用哪种高度都需要去减去tab的高度外加外层容器的padding、margin和内层列表的margin、padding、注意重叠计算
+     * @param {Number} wrapperHeight 为外层容器的实际高度值
+     */
+    resizeContentWrapperHeight(wrapperHeight) {
+      let moduleHeight =
+        this.propData.heightType == "adaptive"
+          ? $("#" + this.moduleObject.packageid)
+              .parents(".fsl-region-element")
+              .height()
+          : this.propData.moduleHeight;
+      if (
+        this.propData.heightType == "adaptive" &&
+        (wrapperHeight || moduleHeight)
+      ) {
+        //自适应父级容器
+        moduleHeight = wrapperHeight || moduleHeight;
+
+        //如果自适应则要减去上margin和下margin(因为margin、padding百分比都是相对父级宽度，所以要计算出实际的宽度值)
+        //父级宽度值未知的，因为组件的宽度是100%显示的
+        //所以计算公式为：(当前组件的宽度+左右margin实际数值)/(100-左右margin百分比总和)*100=实际宽度
+        let iAttrArray = ["marginLeftVal", "marginRightVal"];
+        let marginNumber = 0,
+          marginRatio = 0;
+        iAttrArray.forEach((item) => {
+          if (
+            this.propData.box &&
+            this.propData.box[item] &&
+            this.propData.box[item].indexOf("%") > -1
+          ) {
+            //用宽度计算出实际的px
+            marginRatio += parseFloat(this.propData.box[item].replace("%", ""));
+          } else if (this.propData.box && this.propData.box[item]) {
+            marginNumber += parseFloat(
+              this.propData.box[item].replace("px", "")
+            );
+          }
+        });
+        let module_width = this.$refs.module_ref.offsetWidth;
+        //实际的100%的宽度
+        const module_width_100 =
+          ((module_width + marginNumber) / (100 - marginRatio)) * 100;
+
+        let moduleTBMarginNumber = 0;
+        iAttrArray = ["marginTopVal", "marginBottomVal"];
+        iAttrArray.forEach((item) => {
+          if (this.propData.box && this.propData.box[item]) {
+            if (this.propData.box[item].indexOf("%") > -1) {
+              //用宽度计算出实际的px
+              moduleTBMarginNumber =
+                moduleTBMarginNumber +
+                (parseFloat(this.propData.box[item].replace("%", "")) / 100) *
+                  module_width_100;
+            } else {
+              moduleTBMarginNumber =
+                moduleTBMarginNumber +
+                parseFloat(this.propData.box[item].replace("px", ""));
+            }
+          }
+        });
+        moduleHeight = moduleHeight - moduleTBMarginNumber;
+      }
+      this.moduleHeight = moduleHeight;
+    },
+    /**
      * 把属性转换成样式对象
      */
     convertAttrToStyleObject() {
       let styleObject = {},
-        tabStyleObject = {},
-        tabActiveStyleObject = {},
-        iconStyleObject = {};
+        titleStyleObject = {};
 
       if (this.propData.bgSize && this.propData.bgSize == "custom") {
         styleObject["background-size"] =
@@ -311,102 +391,56 @@ export default {
                 element.radius.rightBottom.radius +
                 element.radius.rightBottom.radiusUnit;
               break;
+            case "boxShadow":
+              styleObject["box-shadow"] = styleObject["box-shadow"]
+                ? element
+                : "none";
+              break;
             case "font":
-              tabStyleObject["font-family"] = element.fontFamily;
+              styleObject["font-family"] = element.fontFamily;
               if (element.fontColors.hex8) {
-                tabStyleObject["color"] = element.fontColors.hex8;
+                styleObject["color"] = element.fontColors.hex8;
               }
-              tabStyleObject["font-weight"] =
+              styleObject["font-weight"] =
                 element.fontWeight && element.fontWeight.split(" ")[0];
-              tabStyleObject["font-style"] = element.fontStyle;
-              tabStyleObject["font-size"] =
+              styleObject["font-style"] = element.fontStyle;
+              styleObject["font-size"] =
                 element.fontSize + element.fontSizeUnit;
-              tabStyleObject["line-height"] =
+              styleObject["line-height"] =
                 element.fontLineHeight +
                 (element.fontLineHeightUnit == "-"
                   ? ""
                   : element.fontLineHeightUnit);
-              tabStyleObject["text-align"] = element.fontTextAlign;
-              tabStyleObject["text-decoration"] = element.fontDecoration;
+              styleObject["text-align"] = element.fontTextAlign;
+              styleObject["text-decoration"] = element.fontDecoration;
               break;
-            case "activeFont":
-              tabActiveStyleObject["font-family"] = element.fontFamily;
+            case "titleFont":
+              titleStyleObject["font-family"] = element.fontFamily;
               if (element.fontColors.hex8) {
-                tabActiveStyleObject["color"] = element.fontColors.hex8;
+                titleStyleObject["color"] = element.fontColors.hex8;
               }
-              tabActiveStyleObject["font-weight"] =
+              titleStyleObject["font-weight"] =
                 element.fontWeight && element.fontWeight.split(" ")[0];
-              tabActiveStyleObject["font-style"] = element.fontStyle;
-              tabActiveStyleObject["font-size"] =
+              titleStyleObject["font-style"] = element.fontStyle;
+              titleStyleObject["font-size"] =
                 element.fontSize + element.fontSizeUnit;
-              tabActiveStyleObject["line-height"] =
+              titleStyleObject["line-height"] =
                 element.fontLineHeight +
                 (element.fontLineHeightUnit == "-"
                   ? ""
                   : element.fontLineHeightUnit);
-              tabActiveStyleObject["text-align"] = element.fontTextAlign;
-              tabActiveStyleObject["text-decoration"] = element.fontDecoration;
-              break;
-            case "iconWidth":
-              iconStyleObject["width"] = element;
-              break;
-            case "iconHeight":
-              iconStyleObject["height"] = element;
-              break;
-            case "tabLeftPadding":
-              tabStyleObject["padding-left"] =
-                element.inputVal + element.selectVal;
-              break;
-            case "tabTopPadding":
-              tabStyleObject["padding-top"] =
-                element.inputVal + element.selectVal;
-              break;
-            case "tabRightPadding":
-              tabStyleObject["padding-right"] =
-                element.inputVal + element.selectVal;
-              break;
-            case "tabBottomPadding":
-              tabStyleObject["padding-bottom"] =
-                element.inputVal + element.selectVal;
+              titleStyleObject["text-align"] = element.fontTextAlign;
+              titleStyleObject["text-decoration"] = element.fontDecoration;
               break;
           }
         }
       }
       window.IDM.setStyleToPageHead(this.moduleObject.id, styleObject);
       window.IDM.setStyleToPageHead(
-        this.moduleObject.id + " .ant-tabs-nav .ant-tabs-tab",
-        tabStyleObject
-      );
-      window.IDM.setStyleToPageHead(
         this.moduleObject.id +
-          " .ant-tabs-nav .ant-tabs-tab.ant-tabs-tab-active",
-        tabActiveStyleObject
+          " .i-new-know-header h3",
+        titleStyleObject
       );
-      window.IDM.setStyleToPageHead(
-        this.moduleObject.id + " .i-common-tab-icon img",
-        iconStyleObject
-      );
-
-      //分割线
-      if (this.propData.tabShowDivider) {
-        styleObject = {};
-        if (this.propData.dividerHeightNumber + "") {
-          styleObject["height"] = this.propData.dividerHeightNumber + "%";
-        }
-        if (this.propData.dividerTopNumber + "") {
-          styleObject["top"] = this.propData.dividerTopNumber + "%";
-        }
-        if (this.propData.dividerRightNumber + "") {
-          styleObject["right"] = this.propData.dividerRightNumber + "px";
-        }
-        if (this.propData.dividerBgColor && this.propData.dividerBgColor.hex8) {
-          styleObject["background-color"] = this.propData.dividerBgColor.hex8;
-        }
-        window.IDM.setStyleToPageHead(
-          this.moduleObject.id + " .ant-tabs-tab-divider::before",
-          styleObject
-        );
-      }
 
       this.initData();
     },
@@ -431,8 +465,7 @@ export default {
     initData() {
       if (!this.moduleObject.env || this.moduleObject.env == "develop") {
         setTimeout(() => {
-          this.tabList = mock;
-          if (this.tabList[0]) this.linkageHandler(this.tabList[0].id);
+          this.infoList = mock;
         }, 500);
       } else if (this.moduleObject.env === "production") {
         let dataSource =
@@ -440,30 +473,17 @@ export default {
         if (!dataSource) {
           return;
         }
+        const params = {};
         IDM.datasource.request(
           dataSource.id,
           {
             moduleObject: this.moduleObject,
+            param: params,
           },
           (res) => {
-            console.log(res, "接口返回结果");
-            this.tabList = res;
-            if(this.tabList.length>0){
-              const defaultType = IDM.url.queryObject() && IDM.url.queryObject().type;
-              let flag = true
-              if(defaultType){
-                this.tabList.forEach(item=>{
-                  if(item.id === defaultType){
-                    this.activeKey = item.id
-                    flag = false
-                    this.linkageHandler(item.id);
-                  }
-                })
-              }
-              if(!defaultType || flag){
-                this.activeKey = this.tabList[0].id
-                this.linkageHandler(this.tabList[0].id);
-              }
+            console.log(res, "最新知识返回结果");
+            if (res) {
+              this.infoList = res;
             }
           },
           (res) => {
@@ -483,7 +503,7 @@ export default {
      * } object
      */
     receiveBroadcastMessage(messageObject) {
-      console.log("通用页签组件收到消息", messageObject);
+      console.log("最新消息收到消息", messageObject);
       switch (messageObject.type) {
         case "websocket":
           if (this.propData.messageRefreshKey && messageObject.message) {
@@ -508,6 +528,17 @@ export default {
         case "linkageReload":
           this.propDataWatchHandle();
           break;
+        case "regionResize":
+          if (
+            messageObject.message.gridEleTarget &&
+            messageObject.message.gridEleTarget.offsetHeight
+          ) {
+            // console.log("🚀 ~ file: ITodoTabsList.vue ~ line 1757 ~ receiveBroadcastMessage ~ gridEleTarget", gridEleTarget.offsetHeight+"")
+            this.resizeContentWrapperHeight(
+              messageObject.message.gridEleTarget.offsetHeight
+            );
+          }
+          break;
       }
     },
     /**
@@ -527,81 +558,117 @@ export default {
       for (var i = 0; i < themeList.length; i++) {
         var item = themeList[i];
 
-        IDM.setStyleToPageHead(
-          "." +
-            themeNamePrefix +
-            item.key +
-            " #" +
-            (this.moduleObject.packageid || "module_demo") +
-            " .ant-tabs-ink-bar",
-          {
-            "background-color": item.mainColor
-              ? IDM.hex8ToRgbaString(item.mainColor.hex8)
-              : "",
-          }
-        );
+        // IDM.setStyleToPageHead(
+        //   "." +
+        //     themeNamePrefix +
+        //     item.key +
+        //     " #" +
+        //     (this.moduleObject.packageid || "module_demo") +
+        //     " .i-new-know-bottom > div .i-new-know-bottom-btn span",
+        //   {
+        //     color: item.mainColor
+        //       ? IDM.hex8ToRgbaString(item.mainColor.hex8)
+        //       : "",
+        //   }
+        // );
       }
     },
   },
 };
 </script>
 <style scoped lang="scss">
-.i-common-tab-outer {
+.i-new-know-outer {
   width: 100%;
+  padding: 0 10px;
+  font-size: 14px;
+  color: #333;
+  background-color: #fff;
 
-  ::v-deep .ant-tabs {
-    .ant-tabs-tab {
-      color: #666;
-      font-size: 14px;
+  .idm_filed_svg_icon {
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.2em;
+    fill: currentColor;
+    overflow: hidden;
+  }
 
-      &.ant-tabs-tab-active {
-        color: #333;
-        font-size: 16px;
-      }
-    }
+  .i-new-know-header {
+    padding: 0 6px;
+    border-bottom: 1px solid rgba(232, 232, 232, 1);
 
-    .ant-tabs-ink-bar {
-      height: 3px;
-    }
-
-    .ant-tabs-bar {
+    h3 {
+      font-weight: 600;
       margin-bottom: 0;
-    }
-
-    .ant-tabs-tab-divider {
-      &::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        right: 0px;
-        width: 1px;
-        height: 50%;
-        background-color: #e8e8e8;
-        pointer-events: none;
-      }
-    }
-
-    .ant-tabs-nav .ant-tabs-tab:last-child .ant-tabs-tab-divider {
-      &::before {
-        display: none;
-      }
-    }
-
-    &.ant-tabs-card {
-      .ant-tabs-card-bar .ant-tabs-nav-container {
-        height: auto;
-
-        .ant-tabs-tab {
-          height: auto;
-          line-height: initial;
-        }
-      }
+      height: 40px;
+      line-height: 40px;
     }
   }
 
-  .i-common-tab-icon img {
-    width: 16px;
-    vertical-align: text-bottom;
+  .i-new-know-container {
+    height: calc(100% - 40px);
+    overflow: auto;
+
+    &::-webkit-scrollbar-track-piece {
+      background-color: #ffffff;
+    }
+
+    &::-webkit-scrollbar {
+      width: 8px;
+      height: 9px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: #ebebeb;
+      background-clip: padding-box;
+      min-height: 28px;
+      border-radius: 4px;
+    }
+
+    .i-new-know-con {
+      display: flex;
+      border-bottom: 1px solid rgba(232, 232, 232, 1);
+      padding: 10px 0;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .i-new-know-avatar {
+        border-radius: 50%;
+        width: 45px;
+        height: 45px;
+        overflow: hidden;
+
+        img {
+          width: 100%;
+        }
+      }
+
+      .i-new-know-detail {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        margin-left: 10px;
+        padding-right: 10px;
+
+        .detail-medal {
+          display: flex;
+          justify-content: space-between;
+
+          .medal-label {
+            display: flex;
+            align-items: center;
+          }
+
+          i {
+            font-style: normal;
+            opacity: 0.65;
+            margin-left: 6px;
+          }
+        }
+      }
+    }
   }
 }
 </style>

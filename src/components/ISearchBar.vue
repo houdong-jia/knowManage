@@ -55,28 +55,6 @@ const hotMock = [
     id: "1004",
   },
 ];
-
-// const templateMock = {
-//   suggest:[
-//     {
-//       id:'1001',
-//       title:'简约商务风工作总结汇报',
-//       img:"",
-//       id:'1002',
-//       title:'简约商务风工作总结汇报',
-//       img:"",
-//       id:'1003',
-//       title:'简约商务风工作总结汇报',
-//       img:"",
-//       id:'1004',
-//       title:'简约商务风工作总结汇报',
-//       img:"",
-//       id:'1005',
-//       title:'简约商务风工作总结汇报',
-//       img:""
-//     }
-//   ]
-// }
 export default {
   name: "ISearchBar",
   data() {
@@ -151,7 +129,7 @@ export default {
 
         const params = {
           text:this.searchText,
-          tabId:this.activeTab
+          type:this.activeTab
         }
         IDM.datasource.request(
           dataSource.id,
@@ -543,7 +521,10 @@ export default {
         hotWordStyleObject
       );
 
-      this.propData.showHotWords && this.initData();
+      // 开发环境数据
+      if (!this.moduleObject.env || this.moduleObject.env == "develop") {
+        this.propData.showHotWords && this.initData();
+      }
     },
     /**
      * 通用的url参数对象
@@ -576,7 +557,9 @@ export default {
           return;
         }
         const params = {
-          tabId:this.activeTab
+          type:this.activeTab,
+          start:0,
+          end: this.propData.hotWordNum || 4
         }
         IDM.datasource.request(
           dataSource.id,
@@ -663,6 +646,7 @@ export default {
           this.activeTab =
             messageObject.message && messageObject.message.activeKey;
           console.log(this.activeTab, "当前页签标识");
+          this.propData.showHotWords && this.initData();
           this.requestTemplate();
           break;
       }
