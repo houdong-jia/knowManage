@@ -9,70 +9,142 @@
     idm-ctrl="idm_module"
     :id="moduleObject.id"
     :idm-ctrl-id="moduleObject.id"
-    class="i-search-bar-outer"
-  >
-    <div class="i-search-bar-main">
-      <div class="i-search-bar-box">
-        <span v-if="propData.searchIcon" class="i-search-bar-box-icon"
-          ><svg-icon icon-class="search"
-        /></span>
-        <input
-          class="i-search-bar-box-ipt"
-          type="text"
-          :placeholder="placeholder"
-          v-model="searchText"
-        />
-        <div class="i-search-bar-box-btn" @click="searchHanlder">搜索</div>
-      </div>
-      <div class="i-search-bar-hotwords" v-if="propData.showHotWords">
-        <span
-          v-for="(word, w) in hotWordList"
-          :key="w"
-          @click="hotWordClick(word)"
-          >{{ word.title }}</span
-        >
+    class="i-know-card-outer"
+  > 
+    <div class="i-know-card-topic" v-for="(topic,t) in  cardList" :key="t">
+      <div class="i-know-card-topic-title">{{topic.title}}</div>
+      <div class="i-know-card-col" v-for="(col, c) in topic.list" :key="c">
+      <div
+        class="i-know-card-item"
+        v-for="(item, i) in col"
+        :key="i"
+        :class="{ emtpy: item.emtpy }"
+      >
+        <template v-if="!item.emtpy">
+          <div
+            class="item-top"
+            :style="`background-image:url(${IDM.url.getWebPath(item.img)})`"
+          >
+            <span class="item-top-tit">{{ item.title }}</span>
+            <span class="item-top-view"
+              ><svg-icon icon-class="view" />{{ item.view }}</span
+            >
+          </div>
+          <div class="item-bottom">
+            <span v-for="(label, l) in item.label.split(',')" :key="l">{{
+              label
+            }}</span>
+          </div>
+        </template>
       </div>
     </div>
+    </div>
+    
   </div>
 </template>
 
 <script>
-const hotMock = [
+const mock = [
   {
-    title: "会议记录",
-    id: "1001",
+    title: "专题目录1",
+    list: [
+      {
+        title: "知识文档1",
+        id: "1001",
+        view: "180",
+        label: "标签1,标签2"
+      },
+      {
+        title: "知识文档2",
+        id: "1002",
+        view: "180",
+        label: "标签1,标签2",
+      },
+      {
+        title: "知识文档3",
+        id: "1003",
+        view: "180",
+        label: "标签1,标签2",
+      },
+      {
+        title: "知识文档3",
+        id: "1003",
+        view: "180",
+        label: "标签1,标签2",
+      },
+      {
+        title: "知识文档3",
+        id: "1003",
+        view: "180",
+        label: "标签1,标签2",
+      },
+      {
+        title: "知识文档3",
+        id: "1003",
+        view: "180",
+        label: "标签1,标签2",
+      },
+      {
+        title: "知识文档3",
+        id: "1003",
+        view: "180",
+        label: "标签1,标签2",
+      },
+      {
+        title: "知识文档3",
+        id: "1003",
+        view: "180",
+        label: "标签1,标签2",
+      },
+      {
+        title: "知识文档3",
+        id: "1003",
+        view: "180",
+        label: "标签1,标签2",
+      },
+    ],
   },
   {
-    title: "工作计划",
-    id: "1002",
-  },
-  {
-    title: "求职简历",
-    id: "1003",
-  },
-  {
-    title: "劳动合同",
-    id: "1004",
+    title: "专题目录2",
+    list: [
+      {
+        title: "知识文档1",
+        id: "1001",
+        view: "180",
+        label: "标签1,标签2",
+      },
+      {
+        title: "知识文档2",
+        id: "1002",
+        view: "180",
+        label: "标签1,标签2",
+      },
+      {
+        title: "知识文档3",
+        id: "1003",
+        view: "180",
+        label: "标签1,标签2",
+      },
+      {
+        title: "知识文档3",
+        id: "1003",
+        view: "180",
+        label: "标签1,标签2",
+      },
+    ],
   },
 ];
 export default {
-  name: "ISearchBar",
+  name: "IKnowCard",
   data() {
     return {
       moduleObject: {},
       propData: this.$root.propData.compositeAttr || {
-        searchIcon:true,
-        hotWordsLoop: true,
-        showHotWords: true,
+        colRow: 7,
       },
-      hotWordList: [],
-      placeholder: "请搜索",
-      placeholderKey: 0,
-      timer: null,
+      cardList: [],
+      // 数据源刷新key
       dataSourceRefresh: [],
-      searchRefresh: [],
-      searchText: "",
-      activeTab:''
     };
   },
   props: {},
@@ -86,88 +158,6 @@ export default {
   destroyed() {},
   methods: {
     /**
-     * 搜索
-     */
-    searchHanlder() {
-      if (this.propData.hotWordsLoop && !this.searchText)
-        this.searchText = this.placeholder;
-
-      this.requestTemplate();
-
-      // 搜索自定义函数
-      const func = this.propData.searchFunction;
-      func &&
-        window[func[0].name] &&
-        window[func[0].name].call(this, {
-          ...this.commonParam(),
-          customParam: func[0].param,
-          _this: this,
-          searchText: this.searchText,
-        });
-    },
-    /**
-     * 热词点击
-     */
-    hotWordClick(item) {
-      this.searchText = item.title;
-      this.searchHanlder();
-    },
-    /**
-     * 请求模板数据
-     */
-    requestTemplate() {
-      if (!this.moduleObject.env || this.moduleObject.env == "develop") {
-        // setTimeout(() => {
-        //   this.hotWordList = hotMock;
-        //   this.hotWordsLoop();
-        // }, 500);
-      } else if (this.moduleObject.env === "production") {
-        let dataSource =
-          this.propData.searchDataSource && this.propData.searchDataSource[0];
-        if (!dataSource) {
-          return;
-        }
-
-        const params = {
-          text:this.searchText,
-          type:this.activeTab
-        }
-        IDM.datasource.request(
-          dataSource.id,
-          {
-            moduleObject: this.moduleObject,
-            param: params,
-          },
-          (res) => {
-            console.log(res, "模板接口返回结果");
-            res && this.linkageHandler(res);
-          },
-          (res) => {
-            console.log(res, "请求失败");
-          }
-        );
-      }
-    },
-    /**
-     * 联动组件
-     */
-    linkageHandler(res) {
-      if (
-        this.propData.linkageComponent &&
-        this.propData.linkageComponent.length > 0
-      ) {
-        const rangeModule = [];
-        this.propData.linkageComponent.forEach((item) => {
-          rangeModule.push(item.moduleId);
-        });
-        IDM.broadcast.send({
-          type: "sendTemplateData",
-          message: res,
-          rangeModule,
-        });
-      }
-    },
-    /**
      * 提供父级组件调用的刷新prop数据组件
      */
     propDataWatchHandle(propData) {
@@ -180,14 +170,6 @@ export default {
      * 初始化变量
      */
     initPropData() {
-      // 滚动热词
-      if (this.propData.hotWordsLoop) {
-        this.hotWordsLoop();
-      } else {
-        clearInterval(this.timer);
-        this.placeholder = "请选择";
-      }
-
       // 数据源解析
       if (this.propData.dataSource && this.propData.dataSource[0]) {
         this.dataSourceRefresh = [];
@@ -197,25 +179,13 @@ export default {
             this.dataSourceRefresh.push(item.key)
           );
       }
-      if (this.propData.searchDataSource && this.propData.searchDataSource[0]) {
-        this.searchRefresh = [];
-        const refreshJson = this.propData.searchDataSource[0].refreshJson;
-        refreshJson &&
-          JSON.parse(refreshJson).forEach((item) =>
-            this.searchRefresh.push(item.key)
-          );
-      }
     },
     /**
      * 把属性转换成样式对象
      */
     convertAttrToStyleObject() {
       let styleObject = {},
-        boxStyleObject = {},
-        innerStyleObject = {},
-        inputStyleObject = {},
-        btnStyleObject = {},
-        hotWordStyleObject = {};
+        innerStyleObject = {};
 
       if (this.propData.bgSize && this.propData.bgSize == "custom") {
         styleObject["background-size"] =
@@ -256,27 +226,14 @@ export default {
             case "innerHeight":
               innerStyleObject["height"] = element;
               break;
-            case "btnWidth":
-              btnStyleObject["width"] = element;
-              break;
-            case "btnHeight":
-              btnStyleObject["height"] = element;
-              break;
             case "bgColor":
               if (element && element.hex8) {
                 styleObject["background-color"] = element.hex8;
               }
               break;
-            case "btnBgColor":
-              if (element && element.hex8) {
-                btnStyleObject["background-color"] =
-                  element.hex8 + "!important";
-              }
-              break;
             case "innerBgColor":
               if (element && element.hex8) {
                 innerStyleObject["background-color"] = element.hex8;
-                inputStyleObject["background-color"] = element.hex8;
               }
               break;
             case "box":
@@ -335,38 +292,6 @@ export default {
               }
               if (element.paddingLeftVal) {
                 innerStyleObject["padding-left"] = `${element.paddingLeftVal}`;
-              }
-              break;
-            case "btnBox":
-              if (element.marginTopVal) {
-                btnStyleObject["margin-top"] = `${element.marginTopVal}`;
-              }
-              if (element.marginRightVal) {
-                btnStyleObject["margin-right"] = `${element.marginRightVal}`;
-              }
-              if (element.marginBottomVal) {
-                btnStyleObject[
-                  "margin-bottom"
-                ] = `${element.marginBottomVal}`;
-              }
-              if (element.marginLeftVal) {
-                btnStyleObject["margin-left"] = `${element.marginLeftVal}`;
-              }
-              if (element.paddingTopVal) {
-                btnStyleObject["padding-top"] = `${element.paddingTopVal}`;
-              }
-              if (element.paddingRightVal) {
-                btnStyleObject[
-                  "padding-right"
-                ] = `${element.paddingRightVal}`;
-              }
-              if (element.paddingBottomVal) {
-                btnStyleObject[
-                  "padding-bottom"
-                ] = `${element.paddingBottomVal}`;
-              }
-              if (element.paddingLeftVal) {
-                btnStyleObject["padding-left"] = `${element.paddingLeftVal}`;
               }
               break;
             case "bgImgUrl":
@@ -449,7 +374,7 @@ export default {
                 innerStyleObject["border-top-style"] = element.border.top.style;
                 if (element.border.top.colors.hex8) {
                   innerStyleObject["border-top-color"] =
-                    element.border.top.colors.hex8 + "!important";
+                    element.border.top.colors.hex8;
                 }
               }
               if (element.border.right.width > 0) {
@@ -459,7 +384,7 @@ export default {
                   element.border.right.style;
                 if (element.border.right.colors.hex8) {
                   innerStyleObject["border-right-color"] =
-                    element.border.right.colors.hex8 + "!important";
+                    element.border.right.colors.hex8;
                 }
               }
               if (element.border.bottom.width > 0) {
@@ -469,7 +394,7 @@ export default {
                   element.border.bottom.style;
                 if (element.border.bottom.colors.hex8) {
                   innerStyleObject["border-bottom-color"] =
-                    element.border.bottom.colors.hex8 + "!important";
+                    element.border.bottom.colors.hex8;
                 }
               }
               if (element.border.left.width > 0) {
@@ -479,7 +404,7 @@ export default {
                   element.border.left.style;
                 if (element.border.left.colors.hex8) {
                   innerStyleObject["border-left-color"] =
-                    element.border.left.colors.hex8 + "!important";
+                    element.border.left.colors.hex8;
                 }
               }
 
@@ -496,64 +421,10 @@ export default {
                 element.radius.rightBottom.radius +
                 element.radius.rightBottom.radiusUnit;
               break;
-            case "btnBorder":
-              if (element.border.top.width > 0) {
-                btnStyleObject["border-top-width"] =
-                  element.border.top.width + element.border.top.widthUnit;
-                btnStyleObject["border-top-style"] = element.border.top.style;
-                if (element.border.top.colors.hex8) {
-                  btnStyleObject["border-top-color"] =
-                    element.border.top.colors.hex8 + "!important";
-                }
-              }
-              if (element.border.right.width > 0) {
-                btnStyleObject["border-right-width"] =
-                  element.border.right.width + element.border.right.widthUnit;
-                btnStyleObject["border-right-style"] =
-                  element.border.right.style;
-                if (element.border.right.colors.hex8) {
-                  btnStyleObject["border-right-color"] =
-                    element.border.right.colors.hex8 + "!important";
-                }
-              }
-              if (element.border.bottom.width > 0) {
-                btnStyleObject["border-bottom-width"] =
-                  element.border.bottom.width + element.border.bottom.widthUnit;
-                btnStyleObject["border-bottom-style"] =
-                  element.border.bottom.style;
-                if (element.border.bottom.colors.hex8) {
-                  btnStyleObject["border-bottom-color"] =
-                    element.border.bottom.colors.hex8 + "!important";
-                }
-              }
-              if (element.border.left.width > 0) {
-                btnStyleObject["border-left-width"] =
-                  element.border.left.width + element.border.left.widthUnit;
-                btnStyleObject["border-left-style"] =
-                  element.border.left.style;
-                if (element.border.left.colors.hex8) {
-                  btnStyleObject["border-left-color"] =
-                    element.border.left.colors.hex8 + "!important";
-                }
-              }
-
-              btnStyleObject["border-top-left-radius"] =
-                element.radius.leftTop.radius +
-                element.radius.leftTop.radiusUnit;
-              btnStyleObject["border-top-right-radius"] =
-                element.radius.rightTop.radius +
-                element.radius.rightTop.radiusUnit;
-              btnStyleObject["border-bottom-left-radius"] =
-                element.radius.leftBottom.radius +
-                element.radius.leftBottom.radiusUnit;
-              btnStyleObject["border-bottom-right-radius"] =
-                element.radius.rightBottom.radius +
-                element.radius.rightBottom.radiusUnit;
-              break;
             case "font":
               innerStyleObject["font-family"] = element.fontFamily;
               if (element.fontColors.hex8) {
-                innerStyleObject["color"] = element.fontColors.hex8;
+                styleObject["color"] = element.fontColors.hex8;
               }
               innerStyleObject["font-weight"] =
                 element.fontWeight && element.fontWeight.split(" ")[0];
@@ -568,56 +439,16 @@ export default {
               innerStyleObject["text-align"] = element.fontTextAlign;
               innerStyleObject["text-decoration"] = element.fontDecoration;
               break;
-            case "hotWordFont":
-              hotWordStyleObject["font-family"] = element.fontFamily;
-              if (element.fontColors.hex8) {
-                hotWordStyleObject["color"] = element.fontColors.hex8;
-              }
-              hotWordStyleObject["font-weight"] =
-                element.fontWeight && element.fontWeight.split(" ")[0];
-              hotWordStyleObject["font-style"] = element.fontStyle;
-              hotWordStyleObject["font-size"] =
-                element.fontSize + element.fontSizeUnit;
-              hotWordStyleObject["line-height"] =
-                element.fontLineHeight +
-                (element.fontLineHeightUnit == "-"
-                  ? ""
-                  : element.fontLineHeightUnit);
-              hotWordStyleObject["text-align"] = element.fontTextAlign;
-              hotWordStyleObject["text-decoration"] = element.fontDecoration;
-              break;
           }
         }
       }
       window.IDM.setStyleToPageHead(this.moduleObject.id, styleObject);
       window.IDM.setStyleToPageHead(
-        this.moduleObject.id + " .i-search-bar-main",
-        boxStyleObject
-      );
-      window.IDM.setStyleToPageHead(
-        this.moduleObject.id + " .i-search-bar-main .i-search-bar-box",
+        this.moduleObject.id + " .i-know-card-col .i-know-card-item",
         innerStyleObject
       );
-      window.IDM.setStyleToPageHead(
-        this.moduleObject.id +
-          " .i-search-bar-main .i-search-bar-box .i-search-bar-box-ipt",
-        inputStyleObject
-      );
-      window.IDM.setStyleToPageHead(
-        this.moduleObject.id +
-          " .i-search-bar-main .i-search-bar-box .i-search-bar-box-btn",
-        btnStyleObject
-      );
-      window.IDM.setStyleToPageHead(
-        this.moduleObject.id +
-          " .i-search-bar-main .i-search-bar-hotwords span",
-        hotWordStyleObject
-      );
 
-      // 开发环境数据
-      if (!this.moduleObject.env || this.moduleObject.env == "develop") {
-        this.propData.showHotWords && this.initData();
-      }
+      this.initData();
     },
     /**
      * 通用的url参数对象
@@ -634,14 +465,35 @@ export default {
       };
       return params;
     },
+    cutArray(array, subLength) {
+      let index = 0;
+      let newArr = [];
+      while (index < array.length) {
+        const arr = array.slice(index, (index += subLength))
+        const arrLength = arr.length
+        if(arrLength < subLength){
+          for(let i = 0;i<subLength-arrLength;i++){
+            arr.push({
+              emtpy:true
+            })
+          }
+        }
+        newArr.push(arr);
+      }
+      return newArr;
+    },
+
     /**
      * 加载动态数据
      */
     initData() {
       if (!this.moduleObject.env || this.moduleObject.env == "develop") {
         setTimeout(() => {
-          this.hotWordList = hotMock;
-          this.propData.hotWordsLoop && this.hotWordsLoop();
+          const res = JSON.parse(JSON.stringify(mock))
+          res.forEach(item => {
+            item.list = this.cutArray(item.list,this.propData.colRow)
+          })
+          this.cardList = res;
         }, 500);
       } else if (this.moduleObject.env === "production") {
         let dataSource =
@@ -649,47 +501,25 @@ export default {
         if (!dataSource) {
           return;
         }
-        const params = {
-          type:this.activeTab,
-          start:0,
-          end: this.propData.hotWordNum || 4
-        }
         IDM.datasource.request(
           dataSource.id,
           {
             moduleObject: this.moduleObject,
-            param:params
+            param:{
+              subjectId:IDM.url.queryString("subjectId")
+            }
           },
           (res) => {
-            console.log(res, "热词接口返回结果");
-            if (res) {
-              this.hotWordList = res;
-              this.propData.hotWordsLoop && this.hotWordsLoop();
-            }
+            console.log(res, "接口返回结果");
+            res.forEach(item => {
+              item.list = this.cutArray(item.list,this.propData.colRow)
+            })
+            this.cardList = res;
           },
           (res) => {
             console.log(res, "请求失败");
           }
         );
-      }
-    },
-    /**
-     * 热词循环定时器
-     */
-    hotWordsLoop() {
-      clearInterval(this.timer);
-      this.timer = null;
-      clearInterval();
-      if (this.hotWordList.length > 0) {
-        this.placeholder = this.hotWordList[this.placeholderKey].title;
-        this.timer = setInterval(() => {
-          if (this.hotWordList.length - 1 <= this.placeholderKey) {
-            this.placeholderKey = 0;
-          } else {
-            this.placeholderKey++;
-          }
-          this.placeholder = this.hotWordList[this.placeholderKey].title;
-        }, 3000);
       }
     },
     /**
@@ -703,7 +533,7 @@ export default {
      * } object
      */
     receiveBroadcastMessage(messageObject) {
-      console.log("搜索框组件收到消息", messageObject);
+      console.log("通用页签组件收到消息", messageObject);
       switch (messageObject.type) {
         case "websocket":
           if (this.propData.messageRefreshKey && messageObject.message) {
@@ -720,27 +550,13 @@ export default {
                 arr.includes(messageData.badgeType) ||
                 this.dataSourceRefresh.includes(messageData.badgeType)
               ) {
-                this.propData.showHotWords && this.initData();
-              }
-              if (
-                arr.includes(messageData.badgeType) ||
-                this.searchRefresh.includes(messageData.badgeType)
-              ) {
-                this.requestTemplate();
+                this.initData();
               }
             }
           }
           break;
         case "linkageReload":
           this.propDataWatchHandle();
-          this.requestTemplate();
-          break;
-        case "sendActiveTab":
-          this.activeTab =
-            messageObject.message && messageObject.message.activeKey;
-          console.log(this.activeTab, "当前页签标识");
-          this.propData.showHotWords && this.initData();
-          this.requestTemplate();
           break;
       }
     },
@@ -767,23 +583,9 @@ export default {
             item.key +
             " #" +
             (this.moduleObject.packageid || "module_demo") +
-            " .i-search-bar-main .i-search-bar-box",
+            " .ant-tabs-ink-bar",
           {
-            "border-color": item.mainColor
-              ? IDM.hex8ToRgbaString(item.mainColor.hex8)
-              : "",
-          }
-        );
-
-        IDM.setStyleToPageHead(
-          "." +
-            themeNamePrefix +
-            item.key +
-            " #" +
-            (this.moduleObject.packageid || "module_demo") +
-            " .i-search-bar-main .i-search-bar-box .i-search-bar-box-btn",
-          {
-            background: item.mainColor
+            "background-color": item.mainColor
               ? IDM.hex8ToRgbaString(item.mainColor.hex8)
               : "",
           }
@@ -794,67 +596,66 @@ export default {
 };
 </script>
 <style scoped lang="scss">
-.i-search-bar-outer {
-  width: 470px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.i-know-card-outer {
+  width: 100%;
 
-  .i-search-bar-main {
-    width: 100%;
-    color: #000;
+  .i-know-card-topic-title {
+    font-size: 16px;
+    color: #333333;
+    font-weight: 600;
+    padding: 10px 0;
+  }
 
-    .i-search-bar-box {
-      height: 44px;
-      line-height: 44px;
-      background: #ffffff;
-      border: 2px solid rgba(0, 145, 255, 1);
-      border-radius: 23px;
-      display: flex;
-      align-items: center;
+  .i-know-card-col {
+    display: flex;
+    margin-bottom: 20px;
 
-      .i-search-bar-box-icon {
-        padding-left: 10px;
-        text-align: center;
-        font-size: 18px;
-        color: currentColor;
-      }
-
-      .i-search-bar-box-ipt {
-        height: 100%;
-        flex: 1;
-        border: none;
-        outline: none;
-        color: currentColor;
-        background-color: transparent;
-        padding-left: 10px;
-
-        &::placeholder {
-          color: currentColor;
-          opacity: 0.4;
-        }
-      }
-      .i-search-bar-box-btn {
-        height: 38px;
-        width: 70px;
-        line-height: 38px;
-        margin-right: 1px;
-        text-align: center;
-        color: #ffffff;
-        background: #0091ff;
-        border-radius: 20px;
-        cursor: pointer;
-      }
+    &:last-child {
+      margin-bottom: 0;
     }
 
-    .i-search-bar-hotwords {
-      padding: 16px 70px 0 40px;
-      display: flex;
-      justify-content: space-around;
+    .i-know-card-item {
+      width: 200px;
+      height: 145px;
+      margin-right: 20px;
+      background: #ffffff;
 
-      span {
-        cursor: pointer;
-        color: #666666;
+      &:last-child {
+        margin-right: 0;
+      }
+
+      .item-top {
+        height: 108px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.1);
+        background-size: 100% 100%;
+
+        .item-top-tit {
+          font-size: 16px;
+          color: #333333;
+        }
+        .item-top-view {
+          font-size: 12px;
+          color: #999999;
+        }
+      }
+      .item-bottom {
+        width: 100%;
+        height: 37px;
+        line-height: 37px;
+        box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        font-size: 12px;
+        color: #999999;
+
+        span {
+          margin-left: 18px;
+        }
       }
     }
   }

@@ -1,7 +1,7 @@
 {
-  "classId": "idm.component.knowmanage.isearchbar",
-  "comName": "搜索框",
-  "className": "ISearchBar",
+  "classId": "idm.component.knowmanage.ipersoncenter",
+  "comName": "个人中心",
+  "className": "IPersonCenter",
   "comType": "common",
   "comLangue": "vue",
   "compositeAttr": [
@@ -19,42 +19,11 @@
       "type": "group",
       "text": "基本属性",
       "desc": "提供设置组件能达到展示效果的基本属性设置信息",
-      "children": [
-        {
-          "type": "switch",
-          "layoutType": "inline",
-          "text": "搜索图标",
-          "bindKey": "searchIcon",
-          "default": true
-        },
-        {
-          "type": "switch",
-          "layoutType": "inline",
-          "text": "开启热词",
-          "bindKey": "showHotWords",
-          "default": true
-        },
-        {
-          "type": "inputNumber",
-          "layoutType": "inline",
-          "text": "热词数量",
-          "bindKey": "hotWordNum",
-          "default": 4,
-          "display":"@[showHotWords]"
-        },
-        {
-          "type": "switch",
-          "layoutType": "inline",
-          "text": "热词滚动",
-          "bindKey": "hotWordsLoop",
-          "default": true,
-          "display":"@[showHotWords]"
-        }
-      ]
+      "children": []
     },
     {
       "type": "group",
-      "text": "外层容器样式设置",
+      "text": "外层样式设置",
       "desc": "点击？查看样式设置用法指南",
       "helpUrl": "",
       "children": [
@@ -75,7 +44,7 @@
               "desc": "填写auto则为自适应，或者使用px、%、vw等单位，比如100%、100px、100vw等等",
               "bindKey": "width",
               "width": "60px",
-              "default": "470px"
+              "default": "100%"
             },
             {
               "type": "input",
@@ -84,7 +53,31 @@
               "desc": "填写auto则为自适应，或者使用px、%、vh等单位，比如100%、100px、100vh等等",
               "bindKey": "height",
               "width": "60px",
-              "default": "auto"
+              "default": "150px"
+            }
+          ]
+        },
+        {
+          "type": "inlineGroup",
+          "text": "内层宽高",
+          "children": [
+            {
+              "type": "input",
+              "layoutType": "block",
+              "text": "内层宽",
+              "desc": "填写auto则为自适应，或者使用px、%、vw等单位，比如100%、100px、100vw等等",
+              "bindKey": "innerWidth",
+              "width": "60px",
+              "default": "1200px"
+            },
+            {
+              "type": "input",
+              "layoutType": "block",
+              "text": "内层高",
+              "desc": "填写auto则为自适应，或者使用px、%、vh等单位，比如100%、100px、100vh等等",
+              "bindKey": "innerHeight",
+              "width": "60px",
+              "default": "100%"
             }
           ]
         },
@@ -271,122 +264,12 @@
           "layoutType": "block",
           "text": "边框",
           "bindKey": "border"
-        }
-      ]
-    },
-    {
-      "type": "group",
-      "text": "内层样式设置",
-      "desc": "点击？查看样式设置用法指南",
-      "helpUrl": "",
-      "children": [
-        {
-          "type": "box",
-          "layoutType": "block",
-          "text": "内外边距",
-          "bindKey": "innerBox"
-        },
-        {
-          "type": "inlineGroup",
-          "text": "宽高",
-          "children": [
-            {
-              "type": "input",
-              "layoutType": "block",
-              "text": "宽",
-              "desc": "填写auto则为自适应，或者使用px、%、vw等单位，比如100%、100px、100vw等等",
-              "bindKey": "innerWidth",
-              "width": "60px",
-              "default": "auto"
-            },
-            {
-              "type": "input",
-              "layoutType": "block",
-              "text": "高",
-              "desc": "填写auto则为自适应，或者使用px、%、vh等单位，比如100%、100px、100vh等等",
-              "bindKey": "innerHeight",
-              "width": "60px",
-              "default": "auto"
-            }
-          ]
-        },
-        {
-          "type": "colorPicker",
-          "layoutType": "inline",
-          "text": "背景色",
-          "bindKey": "innerBgColor",
-          "placeholder": "请选择颜色",
-          "default": {}
-        },
-        {
-          "type": "border",
-          "layoutType": "block",
-          "text": "边框",
-          "bindKey": "innerBorder"
         },
         {
           "type": "font",
           "layoutType": "block",
           "text": "文字",
           "bindKey": "font"
-        },
-        {
-          "type": "font",
-          "layoutType": "block",
-          "text": "热词文字",
-          "bindKey": "hotWordFont"
-        }
-      ]
-    },
-    {
-      "type": "group",
-      "text": "搜索按钮样式设置",
-      "desc": "点击？查看样式设置用法指南",
-      "helpUrl": "",
-      "children": [
-        {
-          "type": "box",
-          "layoutType": "block",
-          "text": "内外边距",
-          "bindKey": "btnBox"
-        },
-        {
-          "type": "inlineGroup",
-          "text": "宽高",
-          "children": [
-            {
-              "type": "input",
-              "layoutType": "block",
-              "text": "宽",
-              "desc": "填写auto则为自适应，或者使用px、%、vw等单位，比如100%、100px、100vw等等",
-              "bindKey": "btnWidth",
-              "width": "60px",
-              "default": "70px"
-            },
-            {
-              "type": "input",
-              "layoutType": "block",
-              "text": "高",
-              "desc": "填写auto则为自适应，或者使用px、%、vh等单位，比如100%、100px、100vh等等",
-              "bindKey": "btnHeight",
-              "width": "60px",
-              "default": "38px"
-            }
-          ]
-        },
-        {
-          "type": "colorPicker",
-          "layoutType": "inline",
-          "text": "背景色",
-          "bindKey": "btnBgColor",
-          "placeholder": "请选择颜色",
-          "default": {}
-        },
-        {
-          "type": "border",
-          "layoutType": "block",
-          "text": "边框",
-          "bindKey": "btnBorder"
         }
       ]
     },
@@ -463,34 +346,11 @@
       "desc": "点击？查看高级设置用法指南",
       "children": [
         {
-          "type": "pageModuleSelect",
-          "layoutType": "block",
-          "text": "联动组件",
-          "desc": "需要联动的组件",
-          "bindKey": "linkageComponent",
-          "multiple":true
-        },
-        {
           "type": "dataSourceSelect",
           "layoutType": "inline",
-          "text": "热词数据",
-          "desc": "热词数据的数据源",
+          "text": "数据源",
+          "desc": "页签数据的数据源",
           "bindKey": "dataSource"
-        },
-        {
-          "type": "dataSourceSelect",
-          "layoutType": "inline",
-          "text": "搜索数据",
-          "desc": "搜索数据的数据源",
-          "bindKey": "searchDataSource"
-        },
-        {
-          "type": "actionSelect",
-          "layoutType": "block",
-          "text": "搜索时动作",
-          "bindKey": "searchFunction",
-          "desc": "搜索的时候会调用设置的自定义函数，接收参数为格式为{...自定义的}",
-          "multiple": true
         },
         {
           "type": "select",
@@ -500,14 +360,14 @@
           "desc": "根据组件接收到的消息KEY来刷新数据",
           "default": "",
           "multiple": true,
-          "placeholder": "示例：hot",
+          "placeholder": "示例：tab",
           "ctrlAttrObject": {
             "mode": "tags"
           },
           "dictionary": [
             {
-              "label": "hot",
-              "value": "hot"
+              "label": "tab",
+              "value": "tab"
             }
           ]
         }

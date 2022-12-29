@@ -38,6 +38,34 @@
       "className": "INewKnow",
       "comType": "common",
       "comLangue": "vue"
+    },
+    {
+      "classId": "idm.component.knowmanage.idirectorymenu",
+      "comName": "目录菜单",
+      "className": "IDirectoryMenu",
+      "comType": "common",
+      "comLangue": "vue"
+    },
+    {
+      "classId": "idm.component.knowmanage.iknowcard",
+      "comName": "知识卡片",
+      "className": "IKnowCard",
+      "comType": "common",
+      "comLangue": "vue"
+    },
+    {
+      "classId": "idm.component.knowmanage.ipersoncenter",
+      "comName": "个人中心",
+      "className": "IPersonCenter",
+      "comType": "common",
+      "comLangue": "vue"
+    },
+    {
+      "classId": "idm.component.knowmanage.iknowtimeaxis",
+      "comName": "知识时间轴",
+      "className": "IKnowTimeAxis",
+      "comType": "common",
+      "comLangue": "vue"
     }
   ]
 }
