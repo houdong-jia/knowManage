@@ -66,6 +66,13 @@
       "className": "IKnowTimeAxis",
       "comType": "common",
       "comLangue": "vue"
+    },
+    {
+      "classId": "idm.component.knowmanage.mycare",
+      "comName": "我的关注",
+      "className": "IMyCare",
+      "comType": "common",
+      "comLangue": "vue"
     }
   ]
 }
