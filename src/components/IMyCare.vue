@@ -10,8 +10,12 @@
                         <div class="top flex_between">
                             <div class="name">{{ item[propData.dataFieldName ? propData.dataFieldName : 'name'] }}</div>
                             <div v-if="propData.showOperatorButton" class="operator">
-                                <span @click="cancel" v-if="item[propData.dataFieldCare ? propData.dataFieldCare : 'care']" class="cancel">取消关注</span>
-                                <span @click="care" v-else class="care">关注</span>
+                                <div @click="cancel" v-if="item[propData.dataFieldCare ? propData.dataFieldCare : 'care']" class="cancel flex_center">
+                                    <span>取消关注</span>
+                                </div>
+                                <div @click="care" v-else class="care flex_center">                     
+                                    <span>取消关注</span>
+                                </div>
                             </div>
                         </div>
                         <div v-if="propData.showIntegral" class="bottom">
@@ -317,12 +321,42 @@ export default {
                         case "fontIntegral":
                             IDM.style.setFontStyle(styleObjectIntegral,element)
                             break;
+
+                        case "widthCare":
+                            styleObjectCare['width'] = element;
+                            break;
+                        case "heightCare":
+                            styleObjectCare['height'] = element;
+                            break;
+                        case "bgColorCare":
+                            if (element && element.hex8) {
+                                styleObjectCare["background-color"] = element.hex8;
+                            }
+                            break;
                         case "fontCare":
                             IDM.style.setFontStyle(styleObjectCare,element)
+                            break;
+                        case "borderCare":
+                            IDM.style.setBorderStyle(styleObjectCare,element)
+                            break;
+                        case "widthCancel":
+                            styleObjectCancel['width'] = element;
+                            break;
+                        case "heightCancel":
+                            styleObjectCancel['height'] = element;
+                            break;
+                        case "bgColorCancel":
+                            if (element && element.hex8) {
+                                styleObjectCancel["background-color"] = element.hex8;
+                            }
                             break;
                         case "fontCancel":
                             IDM.style.setFontStyle(styleObjectCancel,element)
                             break;
+                        case "borderCancel":
+                            IDM.style.setBorderStyle(styleObjectCancel,element)
+                            break;
+                        
                     }
                 }
             }

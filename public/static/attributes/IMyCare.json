@@ -238,16 +238,104 @@
                     "bindKey": "fontIntegral"
                 },
                 {
-                    "type": "font",
-                    "layoutType": "block",
-                    "text": "关注文字",
-                    "bindKey": "fontCare"
+                    "type": "group",
+                    "text": "关注按钮样式",
+                    "children":[
+                        {
+                            "type": "inlineGroup",
+                            "text": "宽高",
+                            "children": [
+                                {
+                                    "type": "input",
+                                    "layoutType": "block",
+                                    "text": "宽",
+                                    "desc": "填写auto则为自适应，或者使用px、%、vw等单位，比如100%、100px、100vw等等",
+                                    "bindKey": "widthCare",
+                                    "width": "60px",
+                                    "default": ""
+                                },
+                                {
+                                    "type": "input",
+                                    "layoutType": "block",
+                                    "text": "高",
+                                    "desc": "填写auto则为自适应，或者使用px、%、vh等单位，比如100%、100px、100vh等等",
+                                    "bindKey": "heightCare",
+                                    "width": "60px",
+                                    "default": ""
+                                }
+                            ]
+                        },
+                        {
+                            "type": "colorPicker",
+                            "layoutType": "inline",
+                            "text": "背景色",
+                            "bindKey": "bgColorCare",
+                            "placeholder": "请选择颜色",
+                            "default": {}
+                        },
+                        {
+                            "type": "font",
+                            "layoutType": "block",
+                            "text": "关注文字",
+                            "bindKey": "fontCare"
+                        },
+                        {
+                            "type": "border",
+                            "layoutType": "block",
+                            "text": "容器边框",
+                            "bindKey": "borderCare"
+                        }
+                    ]
                 },
                 {
-                    "type": "font",
-                    "layoutType": "block",
-                    "text": "取消关注文字",
-                    "bindKey": "fontCancel"
+                    "type": "group",
+                    "text": "取消关注按钮样式",
+                    "children":[
+                        {
+                            "type": "inlineGroup",
+                            "text": "宽高",
+                            "children": [
+                                {
+                                    "type": "input",
+                                    "layoutType": "block",
+                                    "text": "宽",
+                                    "desc": "填写auto则为自适应，或者使用px、%、vw等单位，比如100%、100px、100vw等等",
+                                    "bindKey": "widthCancel",
+                                    "width": "60px",
+                                    "default": ""
+                                },
+                                {
+                                    "type": "input",
+                                    "layoutType": "block",
+                                    "text": "高",
+                                    "desc": "填写auto则为自适应，或者使用px、%、vh等单位，比如100%、100px、100vh等等",
+                                    "bindKey": "heightCancel",
+                                    "width": "60px",
+                                    "default": ""
+                                }
+                            ]
+                        },
+                        {
+                            "type": "colorPicker",
+                            "layoutType": "inline",
+                            "text": "背景色",
+                            "bindKey": "bgColorCancel",
+                            "placeholder": "请选择颜色",
+                            "default": {}
+                        },
+                        {
+                            "type": "font",
+                            "layoutType": "block",
+                            "text": "取消关注文字",
+                            "bindKey": "fontCancel"
+                        },
+                        {
+                            "type": "border",
+                            "layoutType": "block",
+                            "text": "容器边框",
+                            "bindKey": "borderCancel"
+                        }
+                    ]
                 },
                 {
                     "type": "box",
