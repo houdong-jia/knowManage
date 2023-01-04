@@ -19,11 +19,174 @@
       "type": "group",
       "text": "基本属性",
       "desc": "提供设置组件能达到展示效果的基本属性设置信息",
-      "children": []
+      "children": [
+        {
+          "type": "switch",
+          "layoutType": "inline",
+          "text": "回复详情",
+          "bindKey": "showReply",
+          "default": true
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "text": "底部内容设置",
+      "bindKey": "contentList",
+      "tabText": "内容[index]",
+      "default": [
+        {
+          "type": "reply",
+          "desc": "我的纠错",
+          "position": "left",
+          "displayBy": "my",
+          "showType": "field"
+        },
+        {
+          "type": "replyed",
+          "desc": "纠错",
+          "position": "left",
+          "displayBy": "by",
+          "showType": "field"
+        },
+        {
+          "type": "field",
+          "position": "left",
+          "fieldName": "时间",
+          "fieldKey": "publishTime",
+          "showType": "default"
+        },
+        {
+          "type": "icon",
+          "position": "right",
+          "desc": "协作",
+          "icon": ["idm-icon-bianji"],
+          "active": true,
+          "displayBy": "teamup",
+          "showType": "field"
+        },
+        {
+          "type": "icon",
+          "position": "right",
+          "desc": "取消协作",
+          "displayBy": "noteamup",
+          "icon": ["idm-icon-bianji"],
+          "showType": "field"
+        }
+      ],
+      "children": [
+        {
+          "type": "select",
+          "layoutType": "inline",
+          "text": "类型",
+          "bindKey": "type",
+          "desc": "选择内容类型",
+          "placeholder": "请选择",
+          "default": "field",
+          "dictionary": [
+            {
+              "label": "字段",
+              "value": "field"
+            },
+            {
+              "label": "回复",
+              "value": "reply"
+            },
+            {
+              "label": "被回复",
+              "value": "replyed"
+            },
+            {
+              "label": "图标",
+              "value": "icon"
+            }
+          ]
+        },
+        {
+          "type": "input",
+          "layoutType": "inline",
+          "text": "位置",
+          "bindKey": "position",
+          "default": "left",
+          "dictionary": [
+            {
+              "label": "居左",
+              "value": "left"
+            },
+            {
+              "label": "居右",
+              "value": "right"
+            }
+          ]
+        },
+        {
+          "type": "input",
+          "layoutType": "inline",
+          "text": "字段名",
+          "bindKey": "fieldName",
+          "desc": "当前字段名称",
+          "display": "@[type=='field']"
+        },
+        {
+          "type": "dataSourceFiledSelect",
+          "layoutType": "inline",
+          "text": "字段标识",
+          "bindKey": "fieldKey",
+          "desc": "当前字段在数据中对应的属性名",
+          "display": "@[type=='field']"
+        },
+        {
+          "type": "input",
+          "layoutType": "inline",
+          "text": "文字描述",
+          "bindKey": "desc",
+          "display": "@[type!='field']"
+        },
+        {
+          "type": "iconSelect",
+          "layoutType": "inline",
+          "text": "自定义图标",
+          "bindKey": "icon"
+        },
+        {
+          "type": "switch",
+          "layoutType": "inline",
+          "text": "高亮图标",
+          "bindKey": "active",
+          "default": true,
+          "display": "@[type=='icon']"
+        },
+        {
+          "type": "select",
+          "layoutType": "inline",
+          "text": "显示方式",
+          "bindKey": "showType",
+          "desc": "可以根据切换显示方式对每个按钮进行更高级的控制，更多使用方法请点击参考更详细的说明",
+          "dictionary": [
+            {
+              "label": "始终显示",
+              "value": "default"
+            },
+            {
+              "label": "数据字段依据显示",
+              "value": "field"
+            }
+          ],
+          "default": "default"
+        },
+        {
+          "type": "input",
+          "layoutType": "inline",
+          "text": "显示依据",
+          "desc": "根据当前填写的依据字段来去匹配结果值，为true则显示，false则不显示，此处填写表达式，更多详细用法点击查看",
+          "bindKey": "displayBy",
+          "display": "@[showType=='field']"
+        }
+      ]
     },
     {
       "type": "group",
-      "text": "外层样式设置",
+      "text": "样式设置",
       "desc": "点击？查看样式设置用法指南",
       "helpUrl": "",
       "children": [
@@ -53,31 +216,7 @@
               "desc": "填写auto则为自适应，或者使用px、%、vh等单位，比如100%、100px、100vh等等",
               "bindKey": "height",
               "width": "60px",
-              "default": "150px"
-            }
-          ]
-        },
-        {
-          "type": "inlineGroup",
-          "text": "内层宽高",
-          "children": [
-            {
-              "type": "input",
-              "layoutType": "block",
-              "text": "内层宽",
-              "desc": "填写auto则为自适应，或者使用px、%、vw等单位，比如100%、100px、100vw等等",
-              "bindKey": "innerWidth",
-              "width": "60px",
-              "default": "1200px"
-            },
-            {
-              "type": "input",
-              "layoutType": "block",
-              "text": "内层高",
-              "desc": "填写auto则为自适应，或者使用px、%、vh等单位，比如100%、100px、100vh等等",
-              "bindKey": "innerHeight",
-              "width": "60px",
-              "default": "100%"
+              "default": "auto"
             }
           ]
         },

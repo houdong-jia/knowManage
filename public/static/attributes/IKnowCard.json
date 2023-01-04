@@ -26,6 +26,12 @@
           "text": "每行几列",
           "bindKey": "colRow",
           "default": 7
+        },
+        {
+          "type": "pageSelect",
+          "layoutType": "inline",
+          "text": "跳转页面",
+          "bindKey": "jumpPage"
         }
       ]
     },

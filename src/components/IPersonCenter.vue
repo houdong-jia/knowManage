@@ -73,9 +73,7 @@ export default {
   data() {
     return {
       moduleObject: {},
-      propData: this.$root.propData.compositeAttr || {
-        colRow: 7,
-      },
+      propData: this.$root.propData.compositeAttr || {},
       userInfo: {},
     };
   },
@@ -311,24 +309,6 @@ export default {
       };
       return params;
     },
-    cutArray(array, subLength) {
-      let index = 0;
-      let newArr = [];
-      while (index < array.length) {
-        const arr = array.slice(index, (index += subLength));
-        const arrLength = arr.length;
-        if (arrLength < subLength) {
-          for (let i = 0; i < subLength - arrLength; i++) {
-            arr.push({
-              emtpy: true,
-            });
-          }
-        }
-        newArr.push(arr);
-      }
-      return newArr;
-    },
-
     /**
      * 加载动态数据
      */

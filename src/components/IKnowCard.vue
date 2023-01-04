@@ -19,6 +19,7 @@
         v-for="(item, i) in col"
         :key="i"
         :class="{ emtpy: item.emtpy }"
+        @click="cardClick(item)"
       >
         <template v-if="!item.emtpy">
           <div
@@ -157,6 +158,18 @@ export default {
   mounted() {},
   destroyed() {},
   methods: {
+    cardClick(item){
+      if (this.propData.jumpPage && this.propData.jumpPage[0].id) {
+          IDM.router.push(this.moduleObject.pageid, this.propData.jumpPage[0].id, {
+            params: {
+              knowId:item.id,
+              commonParam:this.commonParam()
+            },
+            enterAnim: "",
+            quitAnim: "",
+          });
+        }
+    },
     /**
      * 提供父级组件调用的刷新prop数据组件
      */
@@ -619,6 +632,10 @@ export default {
       height: 145px;
       margin-right: 20px;
       background: #ffffff;
+
+      &.emtpy {
+        pointer-events: none;
+      }
 
       &:last-child {
         margin-right: 0;

@@ -9,74 +9,219 @@
     idm-ctrl="idm_module"
     :id="moduleObject.id"
     :idm-ctrl-id="moduleObject.id"
-    class="i-person-center-outer"
+    class="i-know-time-axis-outer"
   >
-    <div class="i-person-center-container">
-      <div class="i-person-center-left">
-        <div class="user-avatar">
-          <img
-            v-if="userInfo.avatar"
-            :src="IDM.url.getWebPath(userInfo.avatar)"
-          />
-          <img
-            v-else
-            :src="
-              IDM.url.getModuleAssetsWebPath(
-                require('../assets/default_avatar.png'),
-                moduleObject
-              )
-            "
-          />
-        </div>
-        <div class="user-info">
-          <div class="user-info-top">
-            <span class="username">{{userInfo.username}}</span>
-            <span class="title">{{userInfo.title}}</span>
-          </div>
-          <div class="user-info-bottom">
-            <span class="integral">积分：{{userInfo.integral}}</span>
-            <span class="department">部门：{{userInfo.department}}</span>
-          </div>
-        </div>
+    <div
+      class="time-axis-section"
+      v-for="(item, index) in infoList"
+      :key="index"
+    >
+      <div class="section-time" :class="{ frist: index === 0 }">
+        {{ item.date }}
       </div>
-      <div class="i-person-center-right">
-       <div class="right-item">
-        <div class="right-num">{{userInfo.personNum}}</div>
-        <div class="right-text">关注的人</div>
-       </div>
-       <div class="right-item">
-        <div class="right-num">{{userInfo.labelNum}}</div>
-        <div class="right-text">关注的人</div>
-       </div>
-       <div class="right-item">
-        <div class="right-num">{{userInfo.fileNum}}</div>
-        <div class="right-text">关注的人</div>
-       </div>
+      <div class="section-content">
+        <div
+          class="section-item"
+          v-for="(list, l) in item.list"
+          :key="l"
+          :class="{ frist: (index === 0) & (l === 0) }"
+        >
+          <div class="section-item-circle">
+            <div class="circle-inner"></div>
+          </div>
+          <div class="section-item-line"></div>
+          <div class="section-item-title">{{ list.title }}</div>
+          <div class="section-item-desc">{{ list.desc }}</div>
+          <div class="section-item-field">
+            <div class="field-bar">
+              <div
+                v-for="(content, c) in contentList"
+                :key="c"
+                :class="{
+                  'field-bar-left': c === 0,
+                  'field-bar-right': c === 1,
+                }"
+              >
+                <template v-for="(field, f) in content">
+                  <span
+                    class="type-field"
+                    :key="f"
+                    v-if="
+                      field.type === 'field' &&
+                      (field.showType == 'default' || list[field.displayBy])
+                    "
+                  >
+                    {{ field.fieldName }}：{{ list[field.fieldKey] }}
+                  </span>
+                  <span
+                    class="type-reply"
+                    :key="f"
+                    v-if="
+                      field.type === 'reply' &&
+                      (field.showType == 'default' || list[field.displayBy])
+                    "
+                  >
+                    {{ field.desc }}
+                  </span>
+                  <span
+                    class="type-reply ed"
+                    :key="f"
+                    v-if="
+                      field.type === 'replyed' &&
+                      (field.showType == 'default' || list[field.displayBy])
+                    "
+                  >
+                    被
+                    <img
+                      v-if="list.avatar"
+                      :src="IDM.url.getWebPath(list.avatar)"
+                    />
+                    <img
+                      v-else
+                      :src="
+                        IDM.url.getModuleAssetsWebPath(
+                          require('../assets/default_avatar.png'),
+                          moduleObject
+                        )
+                      "
+                    />
+                    <span class="type-reply-username">{{ list.username }}</span>
+                    {{ field.desc }}
+                  </span>
+                  <span
+                    class="type-icon"
+                    :key="f"
+                    v-if="
+                      field.type === 'icon' &&
+                      (field.showType == 'default' || list[field.displayBy])
+                    "
+                    :class="{ active: field.active }"
+                  >
+                    <svg
+                      v-if="field.icon && field.icon[0]"
+                      class="idm_filed_svg_icon"
+                      aria-hidden="true"
+                    >
+                      <use :xlink:href="`#${field.icon[0]}`"></use>
+                    </svg>
+                    <svg-icon v-else icon-class="upload" />
+                    {{ field.desc }}
+                  </span>
+                </template>
+              </div>
+            </div>
+            <div class="field-reply" v-if="propData.showReply">
+              {{ list.reply }}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-const mock = {
-  avatar:'',
-  username:'张三',
-  title:'xxx称号',
-  integral:'2390',
-  department:'xxx部',
-  personNum:78,
-  labelNum:4,
-  fileNum:5
-};
+const mock = [
+  {
+    date: "2022-12-29",
+    list: [
+      {
+        title: "Orcale 数据库的安装和配置",
+        desc: "Oracle Database，又名Oracle RDBMS，或简称Oracle。是甲骨文公司的一款关系数据库管理系统。它是在数据库领域一直处于领先地位的产品。可以说Oracle数据库系统是世界上流行的关系数据库管理系统……….",
+        type: "文档",
+        publishTime: "2022-09-22 14:34",
+        reply: "xxxxxxx",
+        avatar: "",
+        username: "张三",
+        my: true,
+        teamup: true,
+      },
+      {
+        title: "Orcale 数据库的安装和配置",
+        desc: "Oracle Database，又名Oracle RDBMS，或简称Oracle。是甲骨文公司的一款关系数据库管理系统。它是在数据库领域一直处于领先地位的产品。可以说Oracle数据库系统是世界上流行的关系数据库管理系统……….",
+        type: "文档",
+        publishTime: "2022-09-22 14:34",
+        reply: "xxxxxxx",
+        avatar: "",
+        username: "张三",
+        by: true,
+        noteamup: true,
+      },
+    ],
+  },
+  {
+    date: "2022-12-28",
+    list: [
+      {
+        title: "Orcale 数据库的安装和配置",
+        desc: "Oracle Database，又名Oracle RDBMS，或简称Oracle。是甲骨文公司的一款关系数据库管理系统。它是在数据库领域一直处于领先地位的产品。可以说Oracle数据库系统是世界上流行的关系数据库管理系统……….",
+        type: "文档",
+        publishTime: "2022-09-22 14:34",
+      },
+    ],
+  },
+  {
+    date: "2022-12-25",
+    list: [
+      {
+        title: "Orcale 数据库的安装和配置",
+        desc: "Oracle Database，又名Oracle RDBMS，或简称Oracle。是甲骨文公司的一款关系数据库管理系统。它是在数据库领域一直处于领先地位的产品。可以说Oracle数据库系统是世界上流行的关系数据库管理系统……….",
+        type: "文档",
+        publishTime: "2022-09-22 14:34",
+      },
+    ],
+  },
+];
 export default {
   name: "IPersonCenter",
   data() {
     return {
       moduleObject: {},
       propData: this.$root.propData.compositeAttr || {
-        colRow: 7,
+        showReply: true,
+        contentList: [
+          {
+            type: "reply",
+            desc: "我的纠错",
+            position: "left",
+            displayBy: "my",
+            showType: "field",
+          },
+          {
+            type: "replyed",
+            desc: "纠错",
+            position: "left",
+            displayBy: "by",
+            showType: "field",
+          },
+          {
+            type: "field",
+            position: "left",
+            fieldName: "时间",
+            fieldKey: "publishTime",
+            showType: "default",
+          },
+          {
+            type: "icon",
+            position: "right",
+            desc: "协作",
+            icon: [""],
+            active: true,
+            displayBy: "teamup",
+            showType: "field",
+          },
+          {
+            type: "icon",
+            position: "right",
+            desc: "取消协作",
+            displayBy: "noteamup",
+            icon: [""],
+            showType: "field",
+          },
+        ],
       },
-      userInfo: {},
+      infoList: [],
+      contentList: [],
     };
   },
   props: {},
@@ -111,13 +256,25 @@ export default {
             this.dataSourceRefresh.push(item.key)
           );
       }
+
+      if (this.propData.contentList && this.propData.contentList.length > 0) {
+        const left = [];
+        const right = [];
+        this.propData.contentList.forEach((item) => {
+          if (item.position === "left") {
+            left.push(item);
+          } else if (item.position === "right") {
+            right.push(item);
+          }
+        });
+        this.contentList = [left, right];
+      }
     },
     /**
      * 把属性转换成样式对象
      */
     convertAttrToStyleObject() {
-      let styleObject = {},
-        innerStyleObject = {};
+      let styleObject = {};
 
       if (this.propData.bgSize && this.propData.bgSize == "custom") {
         styleObject["background-size"] =
@@ -152,20 +309,9 @@ export default {
             case "height":
               styleObject[key] = element;
               break;
-            case "innerWidth":
-              innerStyleObject["width"] = element;
-              break;
-            case "innerHeight":
-              innerStyleObject["height"] = element;
-              break;
             case "bgColor":
               if (element && element.hex8) {
                 styleObject["background-color"] = element.hex8;
-              }
-              break;
-            case "innerBgColor":
-              if (element && element.hex8) {
-                innerStyleObject["background-color"] = element.hex8;
               }
               break;
             case "box":
@@ -268,31 +414,27 @@ export default {
                 element.radius.rightBottom.radiusUnit;
               break;
             case "font":
-              innerStyleObject["font-family"] = element.fontFamily;
+              styleObject["font-family"] = element.fontFamily;
               if (element.fontColors.hex8) {
                 styleObject["color"] = element.fontColors.hex8;
               }
-              innerStyleObject["font-weight"] =
+              styleObject["font-weight"] =
                 element.fontWeight && element.fontWeight.split(" ")[0];
-              innerStyleObject["font-style"] = element.fontStyle;
-              innerStyleObject["font-size"] =
+              styleObject["font-style"] = element.fontStyle;
+              styleObject["font-size"] =
                 element.fontSize + element.fontSizeUnit;
-              innerStyleObject["line-height"] =
+              styleObject["line-height"] =
                 element.fontLineHeight +
                 (element.fontLineHeightUnit == "-"
                   ? ""
                   : element.fontLineHeightUnit);
-              innerStyleObject["text-align"] = element.fontTextAlign;
-              innerStyleObject["text-decoration"] = element.fontDecoration;
+              styleObject["text-align"] = element.fontTextAlign;
+              styleObject["text-decoration"] = element.fontDecoration;
               break;
           }
         }
       }
       window.IDM.setStyleToPageHead(this.moduleObject.id, styleObject);
-      window.IDM.setStyleToPageHead(
-        this.moduleObject.id + " .i-person-center-container",
-        innerStyleObject
-      );
 
       this.initData();
     },
@@ -311,31 +453,13 @@ export default {
       };
       return params;
     },
-    cutArray(array, subLength) {
-      let index = 0;
-      let newArr = [];
-      while (index < array.length) {
-        const arr = array.slice(index, (index += subLength));
-        const arrLength = arr.length;
-        if (arrLength < subLength) {
-          for (let i = 0; i < subLength - arrLength; i++) {
-            arr.push({
-              emtpy: true,
-            });
-          }
-        }
-        newArr.push(arr);
-      }
-      return newArr;
-    },
-
     /**
      * 加载动态数据
      */
     initData() {
       if (!this.moduleObject.env || this.moduleObject.env == "develop") {
         setTimeout(() => {
-          this.userInfo = mock;
+          this.infoList = mock;
         }, 500);
       } else if (this.moduleObject.env === "production") {
         let dataSource =
@@ -352,8 +476,8 @@ export default {
             },
           },
           (res) => {
-            console.log(res, "个人中心接口返回结果");
-            this.userInfo = res;
+            console.log(res, "知识时间轴接口返回结果");
+            this.infoList = res;
           },
           (res) => {
             console.log(res, "请求失败");
@@ -372,7 +496,7 @@ export default {
      * } object
      */
     receiveBroadcastMessage(messageObject) {
-      console.log("通用页签组件收到消息", messageObject);
+      console.log("知识时间轴组件收到消息", messageObject);
       switch (messageObject.type) {
         case "websocket":
           if (this.propData.messageRefreshKey && messageObject.message) {
@@ -422,9 +546,9 @@ export default {
             item.key +
             " #" +
             (this.moduleObject.packageid || "module_demo") +
-            " .i-person-center-container .i-person-center-right .right-item .right-num",
+            " .i-know-time-axis-container .i-know-time-axis-right .right-item .right-num",
           {
-            "color": item.mainColor
+            color: item.mainColor
               ? IDM.hex8ToRgbaString(item.mainColor.hex8)
               : "",
           }
@@ -435,10 +559,10 @@ export default {
             item.key +
             " #" +
             (this.moduleObject.packageid || "module_demo") +
-            " .i-person-center-container .i-person-center-left .user-info .user-info-top .title",
+            " .i-know-time-axis-container .i-know-time-axis-left .user-info .user-info-top .title",
           {
             "box-shadow": item.mainColor
-              ?  `0 1px 1px 0 ${IDM.hex8ToRgbaString(item.mainColor.hex8)}` 
+              ? `0 1px 1px 0 ${IDM.hex8ToRgbaString(item.mainColor.hex8)}`
               : "",
           }
         );
@@ -448,81 +572,147 @@ export default {
 };
 </script>
 <style scoped lang="scss">
-.i-person-center-outer {
+.i-know-time-axis-outer {
   width: 100%;
-  background: url("../assets/person_center_bg.png") no-repeat;
-  background-size: 100% 100%;
-  height: 150px;
-  font-size: 16px;
+  font-size: 14px;
   color: #666666;
+  padding: 10px;
 
-  .i-person-center-container {
-    width: 1200px;
-    height: 100%;
-    margin: 0 auto;
+  .time-axis-section {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    width: 100%;
 
-    .i-person-center-left {
-      display: flex;
-      align-items: center;
-
-      .user-avatar {
-        width: 96px;
-        height: 96px;
-        border-radius: 50%;
-        overflow: hidden;
-        img {
-          width: 100%;
-          height: 100%;
-        }
-      }
-
-      .user-info {
-        margin-left: 20px;
-
-        .user-info-top {
-          margin-bottom: 20px;
-          display: flex;
-          align-items: center;
-
-          .username {
-            font-size: 25px;
-            color: #333333;
-          }
-
-          .title {
-            display: inline-block;
-            height: 30px;
-            line-height: 30px;
-            margin-left: 10px;
-            border-radius: 17px;
-            padding: 0 14px;
-            background-image: linear-gradient(180deg, #FFFFFF 0%, #C2D8FF 100%);
-            box-shadow: 0 1px 1px 0 #0091FF;
-          }
-        }
-      
-        .user-info-bottom {
-          .integral {
-            margin-right: 50px;
-          }
-        }
+    .section-time {
+      width: 100px;
+      text-align: right;
+      margin-top: 22px;
+      &.frist {
+        margin-top: 0;
       }
     }
 
-    .i-person-center-right {
-      display: flex;
-      text-align: center;
+    .section-content {
+      width: calc(100% - 100px);
+      margin-left: 14px;
 
-      .right-item {
-        margin-left: 70px;
+      .section-item {
+        position: relative;
+        // border-left: 1px solid #d8d8d8;
+        padding-top: 20px;
 
-        .right-num {
-          font-size: 48px;
-          color: #0079FF;
-          font-weight: 700;
+        &.frist {
+          padding-top: 0;
+
+          .section-item-circle {
+            top: 6px;
+          }
+
+          .section-item-line {
+            height: calc(100% - 10px);
+            top: 10px;
+          }
+        }
+
+        & > div {
+          margin-left: 14px;
+        }
+
+        .section-item-circle {
+          position: absolute;
+          left: -6px;
+          top: 26px;
+          width: 11px;
+          height: 11px;
+          border: 1px solid rgba(216, 216, 216, 1);
+          margin-left: 0;
+          border-radius: 50%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          background-color: #fff;
+          z-index: 1;
+
+          .circle-inner {
+            background-color: rgba(216, 216, 216, 1);
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+          }
+        }
+
+        .section-item-line {
+          position: absolute;
+          width: 1px;
+          height: 100%;
+          left: -1px;
+          top: 0;
+          margin-left: 0;
+          background-color: rgba(216, 216, 216, 1);
+        }
+
+        .section-item-title {
+          font-size: 16px;
+          color: #333333;
+          font-weight: 600;
+          margin-bottom: 20px;
+        }
+        .section-item-field {
+          margin-top: 14px;
+          font-size: 14px;
+          color: #999999;
+          border-bottom: 1px dashed rgba(229, 229, 229, 1);
+          padding-bottom: 20px;
+
+          .field-bar {
+            display: flex;
+            justify-content: space-between;
+
+            .field-bar-left span {
+              margin-right: 20px;
+            }
+            .field-bar-right span {
+              margin-left: 20px;
+            }
+
+            .type-reply {
+              font-size: 16px;
+              color: #0079ff;
+              font-weight: 600;
+
+              img {
+                width: 26px;
+                height: 26px;
+                border-radius: 50%;
+                vertical-align: bottom;
+                margin: 0 4px;
+              }
+
+              .type-reply-username {
+                font-size: 16px;
+                color: #333333;
+                font-weight: normal;
+                margin-right: 0;
+              }
+            }
+
+            .type-icon {
+              &.active {
+                color: #0079ff;
+              }
+              .idm_filed_svg_icon {
+                width: 1em;
+                height: 1em;
+                vertical-align: -0.2em;
+                fill: currentColor;
+                overflow: hidden;
+              }
+            }
+          }
+
+          .field-reply {
+            margin-top: 6px;
+            color: #666666;
+          }
         }
       }
     }
