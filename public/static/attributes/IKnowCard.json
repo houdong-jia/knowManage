@@ -28,10 +28,44 @@
           "default": 7
         },
         {
-          "type": "pageSelect",
+          "type": "switch",
           "layoutType": "inline",
-          "text": "跳转页面",
-          "bindKey": "jumpPage"
+          "text": "专题知识",
+          "bindKey": "showNum",
+          "default": false
+        },
+        {
+          "type": "radio",
+          "layoutType": "inline",
+          "text": "底部内容",
+          "bindKey": "bottomContent",
+          "default": "label",
+          "dictionary": [
+            {
+              "label": "标签",
+              "value": "label"
+            },
+            {
+              "label": "按钮",
+              "value": "button"
+            }
+          ]
+        },
+        {
+          "type": "input",
+          "layoutType": "inline",
+          "text": "按钮文本",
+          "bindKey": "buttonText",
+          "default": "进入查看",
+          "display":"@[bottomContent=='button']"
+        },
+        {
+            "type": "actionSelect",
+            "layoutType": "block",
+            "text": "点击时动作",
+            "bindKey": "clickFunction",
+            "desc": "点击的时候会调用设置的自定义函数，接收参数为格式为{customParam:自定义的}",
+            "multiple": true
         }
       ]
     },

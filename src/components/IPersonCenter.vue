@@ -46,11 +46,11 @@
        </div>
        <div class="right-item">
         <div class="right-num">{{userInfo.labelNum}}</div>
-        <div class="right-text">关注的人</div>
+        <div class="right-text">关注的标签</div>
        </div>
        <div class="right-item">
         <div class="right-num">{{userInfo.fileNum}}</div>
-        <div class="right-text">关注的人</div>
+        <div class="right-text">关注的文件</div>
        </div>
       </div>
     </div>

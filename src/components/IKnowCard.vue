@@ -10,37 +10,52 @@
     :id="moduleObject.id"
     :idm-ctrl-id="moduleObject.id"
     class="i-know-card-outer"
-  > 
-    <div class="i-know-card-topic" v-for="(topic,t) in  cardList" :key="t">
-      <div class="i-know-card-topic-title">{{topic.title}}</div>
+  >
+    <div class="i-know-card-topic" v-for="(topic, t) in cardList" :key="t">
+      <div class="i-know-card-topic-title">{{ topic.title }}</div>
       <div class="i-know-card-col" v-for="(col, c) in topic.list" :key="c">
-      <div
-        class="i-know-card-item"
-        v-for="(item, i) in col"
-        :key="i"
-        :class="{ emtpy: item.emtpy }"
-        @click="cardClick(item)"
-      >
-        <template v-if="!item.emtpy">
-          <div
-            class="item-top"
-            :style="`background-image:url(${IDM.url.getWebPath(item.img)})`"
-          >
-            <span class="item-top-tit">{{ item.title }}</span>
-            <span class="item-top-view"
-              ><svg-icon icon-class="view" />{{ item.view }}</span
+        <div
+          class="i-know-card-item"
+          v-for="(item, i) in col"
+          :key="i"
+          :class="{ emtpy: item.emtpy }"
+          @click="propData.bottomContent == 'label' ? cardClick(item) : ''"
+        >
+          <template v-if="!item.emtpy">
+            <div
+              class="item-top"
+              :style="`background-image:url(${IDM.url.getWebPath(item.img)})`"
             >
-          </div>
-          <div class="item-bottom">
-            <span v-for="(label, l) in item.label.split(',')" :key="l">{{
-              label
-            }}</span>
-          </div>
-        </template>
+              <span class="item-top-tit">{{ item.title }}</span>
+              <span class="item-top-view"
+                ><svg-icon icon-class="view" />{{ item.view }}</span
+              >
+              <span class="item-top-num" v-if="propData.showNum"
+                ><span>{{ item.num }}</span
+                >专题知识</span
+              >
+            </div>
+            <div class="item-bottom">
+              <div
+                class="item-bottom-label"
+                v-if="propData.bottomContent == 'label'"
+              >
+                <span v-for="(label, l) in item.label.split(',')" :key="l">{{
+                  label
+                }}</span>
+              </div>
+              <div
+                class="item-bottom-enter"
+                v-if="propData.bottomContent == 'button'"
+                @click.stop="cardClick(item)"
+              >
+                {{ propData.buttonText }}
+              </div>
+            </div>
+          </template>
+        </div>
       </div>
     </div>
-    </div>
-    
   </div>
 </template>
 
@@ -53,7 +68,8 @@ const mock = [
         title: "知识文档1",
         id: "1001",
         view: "180",
-        label: "标签1,标签2"
+        label: "标签1,标签2",
+        num: 5,
       },
       {
         title: "知识文档2",
@@ -142,6 +158,9 @@ export default {
       moduleObject: {},
       propData: this.$root.propData.compositeAttr || {
         colRow: 7,
+        showNum: true,
+        bottomContent: "button",
+        buttonText: "进入查看",
       },
       cardList: [],
       // 数据源刷新key
@@ -158,17 +177,17 @@ export default {
   mounted() {},
   destroyed() {},
   methods: {
-    cardClick(item){
-      if (this.propData.jumpPage && this.propData.jumpPage[0].id) {
-          IDM.router.push(this.moduleObject.pageid, this.propData.jumpPage[0].id, {
-            params: {
-              knowId:item.id,
-              commonParam:this.commonParam()
-            },
-            enterAnim: "",
-            quitAnim: "",
+    cardClick(item) {
+      const func = this.propData.clickFunction?.[0];
+      if (func) {
+        window[func.name] &&
+          window[func.name].call(this, {
+            item,
+            customParam: func.param,
+            commonParam:this.commonParam(),
+            _this: this,
           });
-        }
+      }
     },
     /**
      * 提供父级组件调用的刷新prop数据组件
@@ -482,13 +501,13 @@ export default {
       let index = 0;
       let newArr = [];
       while (index < array.length) {
-        const arr = array.slice(index, (index += subLength))
-        const arrLength = arr.length
-        if(arrLength < subLength){
-          for(let i = 0;i<subLength-arrLength;i++){
+        const arr = array.slice(index, (index += subLength));
+        const arrLength = arr.length;
+        if (arrLength < subLength) {
+          for (let i = 0; i < subLength - arrLength; i++) {
             arr.push({
-              emtpy:true
-            })
+              emtpy: true,
+            });
           }
         }
         newArr.push(arr);
@@ -502,10 +521,10 @@ export default {
     initData() {
       if (!this.moduleObject.env || this.moduleObject.env == "develop") {
         setTimeout(() => {
-          const res = JSON.parse(JSON.stringify(mock))
-          res.forEach(item => {
-            item.list = this.cutArray(item.list,this.propData.colRow)
-          })
+          const res = JSON.parse(JSON.stringify(mock));
+          res.forEach((item) => {
+            item.list = this.cutArray(item.list, this.propData.colRow);
+          });
           this.cardList = res;
         }, 500);
       } else if (this.moduleObject.env === "production") {
@@ -518,15 +537,15 @@ export default {
           dataSource.id,
           {
             moduleObject: this.moduleObject,
-            param:{
-              subjectId:IDM.url.queryString("subjectId")
-            }
+            param: {
+              subjectId: IDM.url.queryString("subjectId"),
+            },
           },
           (res) => {
             console.log(res, "接口返回结果");
-            res.forEach(item => {
-              item.list = this.cutArray(item.list,this.propData.colRow)
-            })
+            res.forEach((item) => {
+              item.list = this.cutArray(item.list, this.propData.colRow);
+            });
             this.cardList = res;
           },
           (res) => {
@@ -596,9 +615,23 @@ export default {
             item.key +
             " #" +
             (this.moduleObject.packageid || "module_demo") +
-            " .ant-tabs-ink-bar",
+            " .i-know-card-col .i-know-card-item .item-top .item-top-num span",
           {
-            "background-color": item.mainColor
+            color: item.mainColor
+              ? IDM.hex8ToRgbaString(item.mainColor.hex8)
+              : "",
+          }
+        );
+
+        IDM.setStyleToPageHead(
+          "." +
+            themeNamePrefix +
+            item.key +
+            " #" +
+            (this.moduleObject.packageid || "module_demo") +
+            " .i-know-card-col .i-know-card-item .item-bottom .item-bottom-enter",
+          {
+            color: item.mainColor
               ? IDM.hex8ToRgbaString(item.mainColor.hex8)
               : "",
           }
@@ -635,6 +668,7 @@ export default {
 
       &.emtpy {
         pointer-events: none;
+        background-color: transparent;
       }
 
       &:last-child {
@@ -658,20 +692,41 @@ export default {
           font-size: 12px;
           color: #999999;
         }
+        .item-top-num {
+          font-size: 12px;
+          margin-top: 3px;
+          span {
+            color: #0091ff;
+            margin-right: 4px;
+          }
+        }
       }
       .item-bottom {
         width: 100%;
-        height: 37px;
-        line-height: 37px;
         box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
         font-size: 12px;
         color: #999999;
 
         span {
           margin-left: 18px;
+        }
+
+        .item-bottom-label {
+          width: 100%;
+          height: 37px;
+          line-height: 37px;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+
+        .item-bottom-enter {
+          height: 42px;
+          line-height: 42px;
+          color: #0091ff;
+          text-align: center;
+          font-size: 16px;
+          cursor: pointer;
         }
       }
     }
