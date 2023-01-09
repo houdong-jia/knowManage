@@ -101,14 +101,14 @@
                     "layoutType": "inline",
                     "text": "展示列数",
                     "bindKey": "showColumn",
-                    "default": 5
+                    "default": 3
                 },
                 {
                     "type": "inputNumber",
                     "layoutType": "inline",
                     "text": "最多行数",
                     "bindKey": "showRows",
-                    "default": 2
+                    "default": 0
                 },
                 {
                     "type": "inputNumber",
