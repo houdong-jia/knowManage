@@ -767,6 +767,14 @@
                     "text": "字段设置",
                     "children":[
                         {
+                            "type": "input",
+                            "layoutType": "inline",
+                            "text": "列表字段",
+                            "bindKey": "listData",
+                            "desc": "列表数据的字段，当分页组件或者其他组件传递结果值为对象时，根据此字段值获取列表数据",
+                            "default":"list"
+                        },
+                        {
                             "type": "dataSourceFiledSelect",
                             "layoutType": "inline",
                             "text": "名称",

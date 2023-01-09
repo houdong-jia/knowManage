@@ -547,6 +547,13 @@ export default {
                     this.onReInitDataMsgKey(object.message,object.messageKey);
                 }
             }
+            if(object.type&&object.type=="linkageResult"){
+                if ( Array.isArray(object.message) ) {
+                    this.data_list = object.message;
+                } else if ( object.message ) {
+                    this.data_list = object.message[this.propData.listData ? this.propData.listData : 'list'];
+                }
+            }
         },
         /**
          * 组件通信：发送消息的方法
