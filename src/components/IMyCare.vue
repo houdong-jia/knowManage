@@ -83,6 +83,19 @@ export default {
                 return IDM.url.getModuleAssetsWebPath(require(`../assets/default_avatar.png`),this.moduleObject)
             }
         },
+        reloadPageContainer() {
+            if(this.propData.linkageReloadPageModule&&this.propData.linkageReloadPageModule.length>0){
+                let moduleIdArray = [];
+                this.propData.linkageReloadPageModule.forEach(item=>{moduleIdArray.push(item.moduleId)});
+                this.sendBroadcastMessage({
+                    type:"linkageReload",
+                    message: {
+                        reloadFirstPage: false
+                    },
+                    rangeModule: moduleIdArray
+                })
+            }
+        },
         care() {
             if( this.moduleObject.env=="develop" ){
                 return;
