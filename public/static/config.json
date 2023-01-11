@@ -54,6 +54,13 @@
       "comLangue": "vue"
     },
     {
+      "classId": "idm.component.knowmanage.isubjectcard",
+      "comName": "专题卡片",
+      "className": "ISubjectCard",
+      "comType": "common",
+      "comLangue": "vue"
+    },
+    {
       "classId": "idm.component.knowmanage.ipersoncenter",
       "comName": "个人中心",
       "className": "IPersonCenter",

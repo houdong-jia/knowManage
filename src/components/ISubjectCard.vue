@@ -9,49 +9,40 @@
     idm-ctrl="idm_module"
     :id="moduleObject.id"
     :idm-ctrl-id="moduleObject.id"
-    class="i-person-center-outer"
+    class="i-subject-card-outer"
   >
-    <div class="i-person-center-container">
-      <div class="i-person-center-left">
-        <div class="user-avatar">
-          <img
-            v-if="userInfo.avatar"
-            :src="IDM.url.getWebPath(userInfo.avatar)"
-          />
-          <img
-            v-else
-            :src="
-              IDM.url.getModuleAssetsWebPath(
-                require('../assets/default_avatar.png'),
-                moduleObject
-              )
-            "
-          />
-        </div>
-        <div class="user-info">
-          <div class="user-info-top">
-            <span class="username">{{userInfo.username}}</span>
-            <span class="title">{{userInfo.title}}</span>
+    <div class="i-subject-card-col" v-for="(col, c) in cardList" :key="c">
+      <div
+        class="i-subject-card-item"
+        v-for="(item, i) in col"
+        :key="i"
+        :class="{ emtpy: item.emtpy }"
+        @click="propData.bottomContent == 'label' ? cardClick(item) : ''"
+      >
+        <template v-if="!item.emtpy">
+          <div
+            class="item-top"
+            :style="`background-image:url(${IDM.url.getWebPath(item.img)})`"
+          >
+            <span class="item-top-tit">{{
+              item[propData.dataFieldTitle]
+            }}</span>
+            <span class="item-top-view"
+              ><svg-icon icon-class="view" />{{
+                item[propData.dataFieldView]
+              }}</span
+            >
+            <span class="item-top-num"
+              ><span>{{ item[[propData.dataFieldNum]] }}</span
+              >专题知识</span
+            >
           </div>
-          <div class="user-info-bottom">
-            <span class="integral">积分：{{userInfo.integral}}</span>
-            <span class="department">部门：{{userInfo.department}}</span>
+          <div class="item-bottom">
+            <div class="item-bottom-enter" @click.stop="cardClick(item)">
+              {{ propData.buttonText }}
+            </div>
           </div>
-        </div>
-      </div>
-      <div class="i-person-center-right">
-       <div class="right-item">
-        <div class="right-num">{{userInfo.personNum}}</div>
-        <div class="right-text">关注的人</div>
-       </div>
-       <div class="right-item">
-        <div class="right-num">{{userInfo.labelNum}}</div>
-        <div class="right-text">关注的标签</div>
-       </div>
-       <div class="right-item">
-        <div class="right-num">{{userInfo.fileNum}}</div>
-        <div class="right-text">关注的文件</div>
-       </div>
+        </template>
       </div>
     </div>
   </div>
@@ -59,22 +50,77 @@
 
 <script>
 const mock = {
-  avatar:'',
-  username:'张三',
-  title:'xxx称号',
-  integral:'2390',
-  department:'xxx部',
-  personNum:78,
-  labelNum:4,
-  fileNum:5
+  total: 5,
+  list: [
+    {
+      title: "知识文档1",
+      id: "1001",
+      view: "180",
+      num: 5,
+    },
+    {
+      title: "知识文档2",
+      id: "1002",
+      view: "180",
+      num: 5,
+    },
+    {
+      title: "知识文档3",
+      id: "1003",
+      view: "180",
+      num: 5,
+    },
+    {
+      title: "知识文档3",
+      id: "1003",
+      view: "180",
+      num: 5,
+    },
+    {
+      title: "知识文档3",
+      id: "1003",
+      view: "180",
+      num: 5,
+    },
+    {
+      title: "知识文档3",
+      id: "1003",
+      view: "180",
+    },
+    {
+      title: "知识文档3",
+      id: "1003",
+      view: "180",
+    },
+    {
+      title: "知识文档3",
+      id: "1003",
+      view: "180",
+      label: "标签1,标签2",
+    },
+    {
+      title: "知识文档3",
+      id: "1003",
+      view: "180",
+    },
+  ],
 };
 export default {
-  name: "IPersonCenter",
+  name: "ISubjectCard",
   data() {
     return {
       moduleObject: {},
-      propData: this.$root.propData.compositeAttr || {},
-      userInfo: {},
+      propData: this.$root.propData.compositeAttr || {
+        colRow: 7,
+        buttonText: "进入查看",
+        listData: "list",
+        dataFieldTitle: "title",
+        dataFieldView: "view",
+        dataFieldNum: "num",
+      },
+      cardList: [],
+      // 数据源刷新key
+      dataSourceRefresh: [],
     };
   },
   props: {},
@@ -82,11 +128,32 @@ export default {
     this.moduleObject = this.$root.moduleObject;
     this.convertThemeListAttrToStyleObject();
     this.convertAttrToStyleObject();
-    this.initPropData();
+
+    if (!this.moduleObject.env || this.moduleObject.env == "develop") {
+      setTimeout(() => {
+        const res = JSON.parse(JSON.stringify(mock));
+        this.cardList = this.cutArray(
+          res[this.propData.listData],
+          this.propData.colRow
+        );
+      }, 500);
+    }
   },
   mounted() {},
   destroyed() {},
   methods: {
+    cardClick(item) {
+      const func = this.propData.clickFunction?.[0];
+      if (func) {
+        window[func.name] &&
+          window[func.name].call(this, {
+            item,
+            customParam: func.param,
+            commonParam: this.commonParam(),
+            _this: this,
+          });
+      }
+    },
     /**
      * 提供父级组件调用的刷新prop数据组件
      */
@@ -94,21 +161,6 @@ export default {
       this.propData = propData.compositeAttr || {};
       this.convertThemeListAttrToStyleObject();
       this.convertAttrToStyleObject();
-      this.initPropData();
-    },
-    /**
-     * 初始化变量
-     */
-    initPropData() {
-      // 数据源解析
-      if (this.propData.dataSource && this.propData.dataSource[0]) {
-        this.dataSourceRefresh = [];
-        const refreshJson = this.propData.dataSource[0].refreshJson;
-        refreshJson &&
-          JSON.parse(refreshJson).forEach((item) =>
-            this.dataSourceRefresh.push(item.key)
-          );
-      }
     },
     /**
      * 把属性转换成样式对象
@@ -192,6 +244,38 @@ export default {
                 styleObject["padding-left"] = `${element.paddingLeftVal}`;
               }
               break;
+            case "innerBox":
+              if (element.marginTopVal) {
+                innerStyleObject["margin-top"] = `${element.marginTopVal}`;
+              }
+              if (element.marginRightVal) {
+                innerStyleObject["margin-right"] = `${element.marginRightVal}`;
+              }
+              if (element.marginBottomVal) {
+                innerStyleObject[
+                  "margin-bottom"
+                ] = `${element.marginBottomVal}`;
+              }
+              if (element.marginLeftVal) {
+                innerStyleObject["margin-left"] = `${element.marginLeftVal}`;
+              }
+              if (element.paddingTopVal) {
+                innerStyleObject["padding-top"] = `${element.paddingTopVal}`;
+              }
+              if (element.paddingRightVal) {
+                innerStyleObject[
+                  "padding-right"
+                ] = `${element.paddingRightVal}`;
+              }
+              if (element.paddingBottomVal) {
+                innerStyleObject[
+                  "padding-bottom"
+                ] = `${element.paddingBottomVal}`;
+              }
+              if (element.paddingLeftVal) {
+                innerStyleObject["padding-left"] = `${element.paddingLeftVal}`;
+              }
+              break;
             case "bgImgUrl":
               styleObject[
                 "background-image"
@@ -265,6 +349,60 @@ export default {
                 element.radius.rightBottom.radius +
                 element.radius.rightBottom.radiusUnit;
               break;
+            case "innerBorder":
+              if (element.border.top.width > 0) {
+                innerStyleObject["border-top-width"] =
+                  element.border.top.width + element.border.top.widthUnit;
+                innerStyleObject["border-top-style"] = element.border.top.style;
+                if (element.border.top.colors.hex8) {
+                  innerStyleObject["border-top-color"] =
+                    element.border.top.colors.hex8;
+                }
+              }
+              if (element.border.right.width > 0) {
+                innerStyleObject["border-right-width"] =
+                  element.border.right.width + element.border.right.widthUnit;
+                innerStyleObject["border-right-style"] =
+                  element.border.right.style;
+                if (element.border.right.colors.hex8) {
+                  innerStyleObject["border-right-color"] =
+                    element.border.right.colors.hex8;
+                }
+              }
+              if (element.border.bottom.width > 0) {
+                innerStyleObject["border-bottom-width"] =
+                  element.border.bottom.width + element.border.bottom.widthUnit;
+                innerStyleObject["border-bottom-style"] =
+                  element.border.bottom.style;
+                if (element.border.bottom.colors.hex8) {
+                  innerStyleObject["border-bottom-color"] =
+                    element.border.bottom.colors.hex8;
+                }
+              }
+              if (element.border.left.width > 0) {
+                innerStyleObject["border-left-width"] =
+                  element.border.left.width + element.border.left.widthUnit;
+                innerStyleObject["border-left-style"] =
+                  element.border.left.style;
+                if (element.border.left.colors.hex8) {
+                  innerStyleObject["border-left-color"] =
+                    element.border.left.colors.hex8;
+                }
+              }
+
+              innerStyleObject["border-top-left-radius"] =
+                element.radius.leftTop.radius +
+                element.radius.leftTop.radiusUnit;
+              innerStyleObject["border-top-right-radius"] =
+                element.radius.rightTop.radius +
+                element.radius.rightTop.radiusUnit;
+              innerStyleObject["border-bottom-left-radius"] =
+                element.radius.leftBottom.radius +
+                element.radius.leftBottom.radiusUnit;
+              innerStyleObject["border-bottom-right-radius"] =
+                element.radius.rightBottom.radius +
+                element.radius.rightBottom.radiusUnit;
+              break;
             case "font":
               innerStyleObject["font-family"] = element.fontFamily;
               if (element.fontColors.hex8) {
@@ -288,11 +426,11 @@ export default {
       }
       window.IDM.setStyleToPageHead(this.moduleObject.id, styleObject);
       window.IDM.setStyleToPageHead(
-        this.moduleObject.id + " .i-person-center-container",
+        this.moduleObject.id + " .i-subject-card-col .i-subject-card-item",
         innerStyleObject
       );
 
-      this.initData();
+      // this.initData();
     },
     /**
      * 通用的url参数对象
@@ -309,13 +447,32 @@ export default {
       };
       return params;
     },
+    cutArray(array, subLength) {
+      let index = 0;
+      let newArr = [];
+      while (index < array.length) {
+        const arr = array.slice(index, (index += subLength));
+        const arrLength = arr.length;
+        if (arrLength < subLength) {
+          for (let i = 0; i < subLength - arrLength; i++) {
+            arr.push({
+              emtpy: true,
+            });
+          }
+        }
+        newArr.push(arr);
+      }
+      return newArr;
+    },
+
     /**
      * 加载动态数据
      */
     initData() {
       if (!this.moduleObject.env || this.moduleObject.env == "develop") {
         setTimeout(() => {
-          this.userInfo = mock;
+          const res = JSON.parse(JSON.stringify(mock));
+          this.cardList = this.cutArray(res, this.propData.colRow);
         }, 500);
       } else if (this.moduleObject.env === "production") {
         let dataSource =
@@ -323,18 +480,20 @@ export default {
         if (!dataSource) {
           return;
         }
-        const userInfo = IDM.user.getCurrentUserInfo()
         IDM.datasource.request(
           dataSource.id,
           {
             moduleObject: this.moduleObject,
             param: {
-              userId: userInfo.userid
+              subjectId: IDM.url.queryString("subjectId"),
             },
           },
           (res) => {
-            console.log(res, "个人中心接口返回结果");
-            this.userInfo = res;
+            console.log(res, "接口返回结果");
+            res.forEach((item) => {
+              item.list = this.cutArray(item.list, this.propData.colRow);
+            });
+            this.cardList = res;
           },
           (res) => {
             console.log(res, "请求失败");
@@ -353,30 +512,23 @@ export default {
      * } object
      */
     receiveBroadcastMessage(messageObject) {
-      console.log("通用页签组件收到消息", messageObject);
+      console.log("主题卡片组件收到消息", messageObject);
       switch (messageObject.type) {
-        case "websocket":
-          if (this.propData.messageRefreshKey && messageObject.message) {
-            // 配置刷新key刷新
-            const messageData =
-              (typeof messageObject.message === "string" &&
-                JSON.parse(messageObject.message)) ||
-              messageObject.message;
-            const arr = Array.isArray(this.propData.messageRefreshKey)
-              ? this.propData.messageRefreshKey
-              : [this.propData.messageRefreshKey];
-            if (messageData.badgeType) {
-              if (
-                arr.includes(messageData.badgeType) ||
-                this.dataSourceRefresh.includes(messageData.badgeType)
-              ) {
-                this.initData();
-              }
-            }
-          }
+        case "linkageDemand":
+          this.cardList = messageObject.message;
           break;
         case "linkageReload":
           this.propDataWatchHandle();
+          break;
+        case "linkageResult":
+          if (Array.isArray(messageObject.message)) {
+            this.cardList = messageObject.message;
+          } else if (messageObject.message) {
+            this.cardList =
+              messageObject.message[
+                this.propData.listData ? this.propData.listData : "list"
+              ];
+          }
           break;
       }
     },
@@ -403,23 +555,24 @@ export default {
             item.key +
             " #" +
             (this.moduleObject.packageid || "module_demo") +
-            " .i-person-center-container .i-person-center-right .right-item .right-num",
+            " .i-subject-card-col .i-subject-card-item .item-top .item-top-num span",
           {
-            "color": item.mainColor
+            color: item.mainColor
               ? IDM.hex8ToRgbaString(item.mainColor.hex8)
               : "",
           }
         );
+
         IDM.setStyleToPageHead(
           "." +
             themeNamePrefix +
             item.key +
             " #" +
             (this.moduleObject.packageid || "module_demo") +
-            " .i-person-center-container .i-person-center-left .user-info .user-info-top .title",
+            " .i-subject-card-col .i-subject-card-item .item-bottom .item-bottom-enter:hover",
           {
-            "box-shadow": item.mainColor
-              ?  `0 1px 1px 0 ${IDM.hex8ToRgbaString(item.mainColor.hex8)}` 
+            color: item.mainColor
+              ? IDM.hex8ToRgbaString(item.mainColor.hex8)
               : "",
           }
         );
@@ -429,81 +582,86 @@ export default {
 };
 </script>
 <style scoped lang="scss">
-.i-person-center-outer {
+.i-subject-card-outer {
   width: 100%;
-  background: url("../assets/person_center_bg.png") no-repeat;
-  background-size: 100% 100%;
-  height: 150px;
-  font-size: 16px;
-  color: #666666;
 
-  .i-person-center-container {
-    width: 1200px;
-    height: 100%;
-    margin: 0 auto;
+  .i-subject-card-topic-title {
+    font-size: 16px;
+    color: #333333;
+    font-weight: 600;
+    padding: 10px 0;
+  }
+
+  .i-subject-card-col {
     display: flex;
-    align-items: center;
+    margin-bottom: 20px;
     justify-content: space-between;
 
-    .i-person-center-left {
-      display: flex;
-      align-items: center;
-
-      .user-avatar {
-        width: 96px;
-        height: 96px;
-        border-radius: 50%;
-        overflow: hidden;
-        img {
-          width: 100%;
-          height: 100%;
-        }
-      }
-
-      .user-info {
-        margin-left: 20px;
-
-        .user-info-top {
-          margin-bottom: 20px;
-          display: flex;
-          align-items: center;
-
-          .username {
-            font-size: 25px;
-            color: #333333;
-          }
-
-          .title {
-            display: inline-block;
-            height: 30px;
-            line-height: 30px;
-            margin-left: 10px;
-            border-radius: 17px;
-            padding: 0 14px;
-            background-image: linear-gradient(180deg, #FFFFFF 0%, #C2D8FF 100%);
-            box-shadow: 0 1px 1px 0 #0091FF;
-          }
-        }
-      
-        .user-info-bottom {
-          .integral {
-            margin-right: 50px;
-          }
-        }
-      }
+    &:last-child {
+      margin-bottom: 0;
     }
 
-    .i-person-center-right {
-      display: flex;
-      text-align: center;
+    .i-subject-card-item {
+      width: 200px;
+      height: 145px;
+      margin-right: 20px;
+      background: #ffffff;
 
-      .right-item {
-        margin-left: 70px;
+      &.emtpy {
+        pointer-events: none;
+        background-color: transparent;
+      }
 
-        .right-num {
-          font-size: 48px;
-          color: #0079FF;
-          font-weight: 700;
+      &:last-child {
+        margin-right: 0;
+      }
+
+      .item-top {
+        height: 108px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.1);
+        background-size: 100% 100%;
+
+        .item-top-tit {
+          font-size: 16px;
+          color: #333333;
+        }
+        .item-top-view {
+          font-size: 12px;
+          color: #999999;
+        }
+        .item-top-num {
+          font-size: 12px;
+          margin-top: 3px;
+          span {
+            color: #0091ff;
+            margin-right: 4px;
+          }
+        }
+      }
+      .item-bottom {
+        width: 100%;
+        box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.1);
+        font-size: 12px;
+        color: #999999;
+
+        span {
+          margin-left: 18px;
+        }
+
+        .item-bottom-enter {
+          height: 42px;
+          line-height: 42px;
+          text-align: center;
+          font-size: 16px;
+          cursor: pointer;
+
+          &:hover {
+            color: #0091ff;
+          }
         }
       }
     }

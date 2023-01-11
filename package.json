@@ -12,9 +12,10 @@
     "@idm-modules/core": "^1.0.4",
     "ant-design-vue": "^1.7.6",
     "core-js": "^3.6.5",
+    "moment": "^2.29.4",
     "sass-loader": "^8.0.2",
-    "vue": "^2.6.11",
-    "vant": "^2.12.53"
+    "vant": "^2.12.53",
+    "vue": "^2.6.11"
   },
   "devDependencies": {
     "@idm-modules/cli-generate": "^1.0.33",

@@ -564,12 +564,14 @@ export default {
         if (!dataSource) {
           return;
         }
-        const params = {};
+        const userInfo = IDM.user.getCurrentUserInfo()
         IDM.datasource.request(
           dataSource.id,
           {
             moduleObject: this.moduleObject,
-            param: params,
+            param: {
+              userId: userInfo.userid
+            }
           },
           (res) => {
             console.log(res, "个人面板返回结果");

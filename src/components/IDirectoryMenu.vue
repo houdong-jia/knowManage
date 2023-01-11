@@ -31,12 +31,13 @@
         :key="m"
         @mousemove="mousemove(menu)"
         @mouseleave="mouseleave()"
+        @click="clickHandler(menu)"
       >
         <div class="container-item-left">
-          <span class="container-item-left-first">{{ menu.label }}</span>
+          <span class="container-item-left-first">{{ menu.name }}</span>
           <span class="container-item-left-second">
             <span v-for="(second, s) in menu.children" :key="s">{{
-              second.label
+              second.name
             }}</span>
           </span>
         </div>
@@ -53,10 +54,10 @@
       @mouseleave="showPopup = false"
     >
       <span class="menu-popup-item" v-for="(menu, m) in curMenu" :key="m">
-        <span class="popup-item-second">{{ menu.label }}</span>
-        <span class="popup-item-third">
-          <span v-for="(third, t) in menu.children" :key="t">{{
-            third.label
+        <span class="popup-item-second" @click.stop="clickHandler(menu)">{{ menu.name }}</span>
+        <span class="popup-item-third" >
+          <span v-for="(third, t) in menu.children" :key="t" @click.stop="clickHandler(third)">{{
+            third.name
           }}</span>
         </span>
       </span>
@@ -67,170 +68,170 @@
 <script>
 const mock = [
   {
-    label: "一级目录",
+    name: "一级目录",
     id: "",
     children: [
       {
-        label: "二级目录",
+        name: "二级目录",
         id: "",
         children: [
           {
-            label: "三级目录",
+            name: "三级目录",
             id: "",
           },
           {
-            label: "三级目录",
+            name: "三级目录",
             id: "",
           },
           {
-            label: "三级目录",
+            name: "三级目录",
             id: "",
           },
           {
-            label: "三级目录",
+            name: "三级目录",
             id: "",
           },
           {
-            label: "三级目录",
+            name: "三级目录",
             id: "",
           },
           {
-            label: "三级目录",
+            name: "三级目录",
             id: "",
           },
           {
-            label: "三级目录",
+            name: "三级目录",
             id: "",
           },
           {
-            label: "三级目录",
+            name: "三级目录",
             id: "",
           },
         ],
       },
       {
-        label: "二级目录",
+        name: "二级目录",
         id: "",
         children: [],
       },
       {
-        label: "二级目录",
+        name: "二级目录",
         id: "",
         children: [],
       },
       {
-        label: "二级目录",
+        name: "二级目录",
         id: "",
         children: [],
       },
       {
-        label: "二级目录",
+        name: "二级目录",
         id: "",
         children: [],
       },
       {
-        label: "二级目录",
+        name: "二级目录",
         id: "",
         children: [],
       },
       {
-        label: "二级目录",
+        name: "二级目录",
         id: "",
         children: [],
       },
       {
-        label: "二级目录",
+        name: "二级目录",
         id: "",
         children: [],
       },
     ],
   },
   {
-    label: "一级目录",
+    name: "一级目录",
     id: "",
     children: [
       {
-        label: "二级目录",
+        name: "二级目录",
         id: "",
         children: [
           {
-            label: "三级目录",
+            name: "三级目录",
             id: "",
             children: [],
           },
           {
-            label: "三级目录",
+            name: "三级目录",
             id: "",
             children: [],
           },
         ],
       },
       {
-        label: "二级目录",
+        name: "二级目录",
         id: "",
         children: [],
       },
       {
-        label: "二级目录",
+        name: "二级目录",
         id: "",
         children: [],
       },
       {
-        label: "二级目录",
+        name: "二级目录",
         id: "",
         children: [],
       },
     ],
   },
   {
-    label: "一级目录",
+    name: "一级目录",
     id: "",
     children: [
       {
-        label: "二级目录",
+        name: "二级目录",
         id: "",
         children: [
           {
-            label: "三级目录",
+            name: "三级目录",
             id: "",
             children: [],
           },
           {
-            label: "三级目录",
+            name: "三级目录",
             id: "",
             children: [],
           },
         ],
       },
       {
-        label: "二级目录",
+        name: "二级目录",
         id: "",
         children: [],
       },
       {
-        label: "二级目录",
+        name: "二级目录",
         id: "",
         children: [],
       },
       {
-        label: "二级目录",
+        name: "二级目录",
         id: "",
         children: [],
       },
     ],
   },
   {
-    label: "一级目录",
+    name: "一级目录",
     id: "",
     children: [],
   },
   {
-    label: "一级目录",
+    name: "一级目录",
     id: "",
     children: [],
   },
   {
-    label: "一级目录",
+    name: "一级目录",
     id: "",
     children: [],
   },
@@ -276,6 +277,18 @@ export default {
   mounted() {},
   destroyed() {},
   methods: {
+    clickHandler(item){
+      const func = this.propData.clickFunction?.[0];
+      if (func) {
+        window[func.name] &&
+          window[func.name].call(this, {
+            item,
+            customParam: func.param,
+            commonParam: this.commonParam(),
+            _this: this,
+          });
+      }
+    },
     tabClick(tab){
       this.activeTab = tab.value;
       this.initData()
@@ -317,6 +330,8 @@ export default {
             this.dataSourceRefresh.push(item.key)
           );
       }
+
+      this.initData();
     },
     /**
      * 根据属性heightType确定是使用固定高度还是自动适应外层的高度
@@ -654,8 +669,6 @@ export default {
           " .i-directory-menu-bottom > div .i-directory-menu-bottom-btn.right-bottom span",
         rightBottomIconStyleObject
       );
-
-      this.initData();
     },
     /**
      * 通用的url参数对象
@@ -688,8 +701,9 @@ export default {
           return;
         }
         const params = {
-          type:this.activeTab
+          groupType:this.activeTab
         };
+        console.log(params,"参数参数参数")
         IDM.datasource.request(
           dataSource.id,
           {
@@ -801,6 +815,7 @@ export default {
   background-color: #fff;
   position: relative;
   box-shadow: 0px 0px 6px 0px rgba(17, 34, 101, 0.2);
+  z-index: 99;
 
   .i-directory-menu-tab {
     background: #0091ff;

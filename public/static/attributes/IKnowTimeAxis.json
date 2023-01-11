@@ -23,9 +23,23 @@
         {
           "type": "switch",
           "layoutType": "inline",
+          "text": "自动加载",
+          "bindKey": "autoLoad",
+          "default": true
+        },
+        {
+          "type": "switch",
+          "layoutType": "inline",
           "text": "回复详情",
           "bindKey": "showReply",
           "default": true
+        },
+        {
+          "type": "input",
+          "layoutType": "inline",
+          "text": "每页条数",
+          "bindKey": "limit",
+          "default": 10
         }
       ]
     },
@@ -97,13 +111,13 @@
               "value": "replyed"
             },
             {
-              "label": "图标",
-              "value": "icon"
+              "label": "按钮",
+              "value": "btn"
             }
           ]
         },
         {
-          "type": "input",
+          "type": "radio",
           "layoutType": "inline",
           "text": "位置",
           "bindKey": "position",
@@ -143,18 +157,27 @@
           "display": "@[type!='field']"
         },
         {
+          "type": "switch",
+          "layoutType": "inline",
+          "text": "显示图标",
+          "bindKey": "showIcon",
+          "default": true,
+          "display": "@[type=='btn']"
+        },
+        {
           "type": "iconSelect",
           "layoutType": "inline",
           "text": "自定义图标",
-          "bindKey": "icon"
+          "bindKey": "icon",
+          "display": "@[type=='btn'&&showIcon]"
         },
         {
           "type": "switch",
           "layoutType": "inline",
-          "text": "高亮图标",
+          "text": "高亮",
           "bindKey": "active",
           "default": true,
-          "display": "@[type=='icon']"
+          "display": "@[type=='btn']"
         },
         {
           "type": "select",
@@ -181,6 +204,14 @@
           "desc": "根据当前填写的依据字段来去匹配结果值，为true则显示，false则不显示，此处填写表达式，更多详细用法点击查看",
           "bindKey": "displayBy",
           "display": "@[showType=='field']"
+        },{
+          "type": "actionSelect",
+          "layoutType": "block",
+          "text": "按钮自定义函数",
+          "bindKey": "btnFunction",
+          "desc": "按钮自定义函数，返回当前记录对象",
+          "multiple": false,
+          "display": "@[type=='btn']"
         }
       ]
     },
@@ -409,6 +440,20 @@
           "layoutType": "block",
           "text": "文字",
           "bindKey": "font"
+        },
+        {
+          "type": "input",
+          "layoutType": "block",
+          "text": "底部内容左侧最小宽度",
+          "desc": "填写auto则为自适应，或者使用px、%、vw等单位，比如100%、100px、100vw等等",
+          "bindKey": "leftMinWidth"
+        },
+        {
+          "type": "input",
+          "layoutType": "block",
+          "text": "底部内容左侧最小宽度",
+          "desc": "填写auto则为自适应，或者使用px、%、vw等单位，比如100%、100px、100vw等等",
+          "bindKey": "rightMinWidth"
         }
       ]
     },
@@ -484,6 +529,7 @@
       "text": "高级",
       "desc": "点击？查看高级设置用法指南",
       "children": [
+
         {
           "type": "dataSourceSelect",
           "layoutType": "inline",
@@ -509,6 +555,14 @@
               "value": "tab"
             }
           ]
+        },
+        {
+          "type": "actionSelect",
+          "layoutType": "block",
+          "text": "点击自定义函数",
+          "bindKey": "clickFunction",
+          "desc": "点击自定义函数，返回当前记录对象",
+          "multiple": false
         }
       ]
     }

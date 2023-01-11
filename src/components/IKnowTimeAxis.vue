@@ -11,167 +11,196 @@
     :idm-ctrl-id="moduleObject.id"
     class="i-know-time-axis-outer"
   >
-    <div
-      class="time-axis-section"
-      v-for="(item, index) in infoList"
-      :key="index"
+    <knowmanage-a-list
+      item-layout="horizontal"
+      :data-source="infoList"
+      :locale="{ emptyText: '暂无数据' }"
     >
-      <div class="section-time" :class="{ frist: index === 0 }">
-        {{ item.date }}
-      </div>
-      <div class="section-content">
+      <template #loadMore v-if="infoList.length > 0">
+        <div class="i-know-time-axis-more">
+          <template v-if="!loadFinish">
+            <a-spin v-if="loadingMore" />
+            <knowmanage-a-button v-else @click="loadMoreHandler"
+              >加载更多</knowmanage-a-button
+            >
+          </template>
+          <span v-else>没有更多了</span>
+        </div>
+      </template>
+      <template>
         <div
-          class="section-item"
-          v-for="(list, l) in item.list"
-          :key="l"
-          :class="{ frist: (index === 0) & (l === 0) }"
+          class="time-axis-section"
+          v-for="(item, index) in infoList"
+          :key="index"
         >
-          <div class="section-item-circle">
-            <div class="circle-inner"></div>
+          <div class="section-time" :class="{ frist: index === 0 }">
+            {{ formatDate(item.date) }}
           </div>
-          <div class="section-item-line"></div>
-          <div class="section-item-title">{{ list.title }}</div>
-          <div class="section-item-desc">{{ list.desc }}</div>
-          <div class="section-item-field">
-            <div class="field-bar">
-              <div
-                v-for="(content, c) in contentList"
-                :key="c"
-                :class="{
-                  'field-bar-left': c === 0,
-                  'field-bar-right': c === 1,
-                }"
-              >
-                <template v-for="(field, f) in content">
-                  <span
-                    class="type-field"
-                    :key="f"
-                    v-if="
-                      field.type === 'field' &&
-                      (field.showType == 'default' || list[field.displayBy])
-                    "
-                  >
-                    {{ field.fieldName }}：{{ list[field.fieldKey] }}
-                  </span>
-                  <span
-                    class="type-reply"
-                    :key="f"
-                    v-if="
-                      field.type === 'reply' &&
-                      (field.showType == 'default' || list[field.displayBy])
-                    "
-                  >
-                    {{ field.desc }}
-                  </span>
-                  <span
-                    class="type-reply ed"
-                    :key="f"
-                    v-if="
-                      field.type === 'replyed' &&
-                      (field.showType == 'default' || list[field.displayBy])
-                    "
-                  >
-                    被
-                    <img
-                      v-if="list.avatar"
-                      :src="IDM.url.getWebPath(list.avatar)"
-                    />
-                    <img
-                      v-else
-                      :src="
-                        IDM.url.getModuleAssetsWebPath(
-                          require('../assets/default_avatar.png'),
-                          moduleObject
-                        )
-                      "
-                    />
-                    <span class="type-reply-username">{{ list.username }}</span>
-                    {{ field.desc }}
-                  </span>
-                  <span
-                    class="type-icon"
-                    :key="f"
-                    v-if="
-                      field.type === 'icon' &&
-                      (field.showType == 'default' || list[field.displayBy])
-                    "
-                    :class="{ active: field.active }"
-                  >
-                    <svg
-                      v-if="field.icon && field.icon[0]"
-                      class="idm_filed_svg_icon"
-                      aria-hidden="true"
-                    >
-                      <use :xlink:href="`#${field.icon[0]}`"></use>
-                    </svg>
-                    <svg-icon v-else icon-class="upload" />
-                    {{ field.desc }}
-                  </span>
-                </template>
+          <div class="section-content">
+            <div
+              class="section-item"
+              v-for="(list, l) in item.list"
+              :key="l"
+              :class="{ frist: (index === 0) & (l === 0) }"
+              @click="sectionClick(item)"
+            >
+              <div class="section-item-circle">
+                <div class="circle-inner"></div>
               </div>
-            </div>
-            <div class="field-reply" v-if="propData.showReply">
-              {{ list.reply }}
+              <div class="section-item-line"></div>
+              <div class="section-item-title" v-html="list.title"></div>
+              <div class="section-item-desc" v-html="list.desc"></div>
+              <div class="section-item-field">
+                <div class="field-bar">
+                  <div
+                    v-for="(content, c) in contentList"
+                    :key="c"
+                    :class="{
+                      'field-bar-left': c === 0,
+                      'field-bar-right': c === 1,
+                    }"
+                    :style="`min-width:${c === 0 ? propData.leftMinWidth : propData.rightMinWidth};text-align:${c === 0 ? 'left' : 'right'}`"
+                  >
+                    <template v-for="(field, f) in content">
+                      <span
+                        class="type-field"
+                        :key="f"
+                        v-if="
+                          field.type === 'field' &&
+                          (field.showType == 'default' || list[field.displayBy])
+                        "
+                      >
+                        {{ field.fieldName }}：{{ list[field.fieldKey] }}
+                      </span>
+                      <span
+                        class="type-reply"
+                        :key="f"
+                        v-if="
+                          field.type === 'reply' &&
+                          (field.showType == 'default' || list[field.displayBy])
+                        "
+                      >
+                        {{ field.desc }}
+                      </span>
+                      <span
+                        class="type-reply ed"
+                        :key="f"
+                        v-if="
+                          field.type === 'replyed' &&
+                          (field.showType == 'default' || list[field.displayBy])
+                        "
+                      >
+                        被
+                        <img
+                          v-if="list.avatar"
+                          :src="IDM.url.getWebPath(list.avatar)"
+                        />
+                        <img
+                          v-else
+                          :src="
+                            IDM.url.getModuleAssetsWebPath(
+                              require('../assets/default_avatar.png'),
+                              moduleObject
+                            )
+                          "
+                        />
+                        <span class="type-reply-username">{{
+                          list.username
+                        }}</span>
+                        {{ field.desc }}
+                      </span>
+                      <span
+                        class="type-btn"
+                        :key="f"
+                        v-if="
+                          field.type === 'btn' &&
+                          (field.showType == 'default' || list[field.displayBy])
+                        "
+                        :class="{ active: field.active }"
+                        @click="btnHanlder(field, list)"
+                      >
+                      <template v-if="field.showIcon">
+                        <svg
+                          v-if="field.icon && field.icon[0]"
+                          class="idm_filed_svg_icon"
+                          aria-hidden="true"
+                        >
+                          <use :xlink:href="`#${field.icon[0]}`"></use>
+                        </svg>
+                        <svg-icon v-else icon-class="upload" />
+                      </template>
+                        {{ field.desc }}
+                      </span>
+                    </template>
+                  </div>
+                </div>
+                <div class="field-reply" v-if="propData.showReply">
+                  {{ list.replyContent }}
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </template>
+    </knowmanage-a-list>
   </div>
 </template>
 
 <script>
-const mock = [
-  {
-    date: "2022-12-29",
-    list: [
-      {
-        title: "Orcale 数据库的安装和配置",
-        desc: "Oracle Database，又名Oracle RDBMS，或简称Oracle。是甲骨文公司的一款关系数据库管理系统。它是在数据库领域一直处于领先地位的产品。可以说Oracle数据库系统是世界上流行的关系数据库管理系统……….",
-        type: "文档",
-        publishTime: "2022-09-22 14:34",
-        reply: "xxxxxxx",
-        avatar: "",
-        username: "张三",
-        my: true,
-        teamup: true,
-      },
-      {
-        title: "Orcale 数据库的安装和配置",
-        desc: "Oracle Database，又名Oracle RDBMS，或简称Oracle。是甲骨文公司的一款关系数据库管理系统。它是在数据库领域一直处于领先地位的产品。可以说Oracle数据库系统是世界上流行的关系数据库管理系统……….",
-        type: "文档",
-        publishTime: "2022-09-22 14:34",
-        reply: "xxxxxxx",
-        avatar: "",
-        username: "张三",
-        by: true,
-        noteamup: true,
-      },
-    ],
-  },
-  {
-    date: "2022-12-28",
-    list: [
-      {
-        title: "Orcale 数据库的安装和配置",
-        desc: "Oracle Database，又名Oracle RDBMS，或简称Oracle。是甲骨文公司的一款关系数据库管理系统。它是在数据库领域一直处于领先地位的产品。可以说Oracle数据库系统是世界上流行的关系数据库管理系统……….",
-        type: "文档",
-        publishTime: "2022-09-22 14:34",
-      },
-    ],
-  },
-  {
-    date: "2022-12-25",
-    list: [
-      {
-        title: "Orcale 数据库的安装和配置",
-        desc: "Oracle Database，又名Oracle RDBMS，或简称Oracle。是甲骨文公司的一款关系数据库管理系统。它是在数据库领域一直处于领先地位的产品。可以说Oracle数据库系统是世界上流行的关系数据库管理系统……….",
-        type: "文档",
-        publishTime: "2022-09-22 14:34",
-      },
-    ],
-  },
-];
+const mock = {
+  total: 8,
+  list: [
+    {
+      date: "2023-01-09",
+      list: [
+        {
+          title: "Orcale 数据库的安装和配置",
+          desc: "Oracle Database，又名Oracle RDBMS，或简称Oracle。是甲骨文公司的一款关系数据库管理系统。它是在数据库领域一直处于领先地位的产品。可以说Oracle数据库系统是世界上流行的关系数据库管理系统……….",
+          type: "文档",
+          publishTime: "2022-09-22 14:34",
+          replyContent: "xxxxxxx",
+          avatar: "",
+          username: "张三",
+          reply: true
+        },
+        {
+          title: "Orcale 数据库的安装和配置",
+          desc: "Oracle Database，又名Oracle RDBMS，或简称Oracle。是甲骨文公司的一款关系数据库管理系统。它是在数据库领域一直处于领先地位的产品。可以说Oracle数据库系统是世界上流行的关系数据库管理系统……….",
+          type: "文档",
+          publishTime: "2022-09-22 14:34",
+          replyContent: "xxxxxxx",
+          avatar: "",
+          username: "张三",
+          byReply: true,
+        },
+      ],
+    },
+    {
+      date: "2023-01-08",
+      list: [
+        {
+          title: "Orcale 数据库的安装和配置",
+          desc: "Oracle Database，又名Oracle RDBMS，或简称Oracle。是甲骨文公司的一款关系数据库管理系统。它是在数据库领域一直处于领先地位的产品。可以说Oracle数据库系统是世界上流行的关系数据库管理系统……….",
+          type: "文档",
+          publishTime: "2022-09-22 14:34",
+        },
+      ],
+    },
+    {
+      date: "2022-12-25",
+      list: [
+        {
+          title: "Orcale 数据库的安装和配置",
+          desc: "Oracle Database，又名Oracle RDBMS，或简称Oracle。是甲骨文公司的一款关系数据库管理系统。它是在数据库领域一直处于领先地位的产品。可以说Oracle数据库系统是世界上流行的关系数据库管理系统……….",
+          type: "文档",
+          publishTime: "2022-09-22 14:34",
+        },
+      ],
+    },
+  ],
+};
+
+import moment from "moment";
 export default {
   name: "IPersonCenter",
   data() {
@@ -184,14 +213,14 @@ export default {
             type: "reply",
             desc: "我的纠错",
             position: "left",
-            displayBy: "my",
+            displayBy: "reply",
             showType: "field",
           },
           {
             type: "replyed",
             desc: "纠错",
             position: "left",
-            displayBy: "by",
+            displayBy: "byReply",
             showType: "field",
           },
           {
@@ -202,26 +231,26 @@ export default {
             showType: "default",
           },
           {
-            type: "icon",
-            position: "right",
-            desc: "协作",
-            icon: [""],
-            active: true,
-            displayBy: "teamup",
-            showType: "field",
-          },
-          {
-            type: "icon",
+            type: "btn",
             position: "right",
             desc: "取消协作",
             displayBy: "noteamup",
+            showIcon:true,
             icon: [""],
-            showType: "field",
+            showType: "default",
           },
         ],
+        autoLoad:true
       },
       infoList: [],
+      infoListLength:0,
       contentList: [],
+      loadingMore: false,
+      limit: 10,
+      start: 0,
+      loadFinish: false,
+      filterParams: {},
+      custParams: {},
     };
   },
   props: {},
@@ -234,6 +263,49 @@ export default {
   mounted() {},
   destroyed() {},
   methods: {
+    /**
+     * 格式化日期
+     */
+    formatDate(d) {
+      const today = moment(moment(new Date()).format("YYYY-MM-DD")).format("x");
+      const yesterday = today - 24 * 60 * 60 * 1000;
+      const date = moment(d).format("x");
+      return date == today ? "今天" : date == yesterday ? "昨天" : d;
+    },
+    /**
+     * 加载更多
+     */
+    loadMoreHandler() {
+      this.initData();
+    },
+    /**
+     * 按钮点击
+     */
+    btnHanlder(field, list) {
+      const func = field.btnFunction;
+      func &&
+        window[func[0].name] &&
+        window[func[0].name].call(this, {
+          ...this.commonParam(),
+          customParam: func[0].param,
+          item: list,
+          _this: this,
+        });
+    },
+    /**
+     * 当前条目点击
+     */
+    sectionClick(item) {
+      const func = this.propData.clickFunction;
+      func &&
+        window[func[0].name] &&
+        window[func[0].name].call(this, {
+          ...this.commonParam(),
+          customParam: func[0].param,
+          item: item,
+          _this: this,
+        });
+    },
     /**
      * 提供父级组件调用的刷新prop数据组件
      */
@@ -436,7 +508,11 @@ export default {
       }
       window.IDM.setStyleToPageHead(this.moduleObject.id, styleObject);
 
-      this.initData();
+      if(this.propData.autoLoad){
+        this.infoList = [];
+        this.infoListLength = 0;
+        this.initData();
+      }
     },
     /**
      * 通用的url参数对象
@@ -456,10 +532,18 @@ export default {
     /**
      * 加载动态数据
      */
-    initData() {
+    initData(limit,start) {
+      this.loadMore = true;
       if (!this.moduleObject.env || this.moduleObject.env == "develop") {
         setTimeout(() => {
-          this.infoList = mock;
+          this.loadMore = false;
+          const list = JSON.parse(JSON.stringify(mock.list));
+          this.infoList = [...this.infoList, ...list];
+          let length = 0;
+          this.infoList.forEach((item) => {
+            length += item.list.length;
+          });
+          this.loadFinish = length >= mock.total;
         }, 500);
       } else if (this.moduleObject.env === "production") {
         let dataSource =
@@ -467,17 +551,28 @@ export default {
         if (!dataSource) {
           return;
         }
+        const param = {
+          limit: limit || this.propData.limit,
+          start: start || this.infoListLength,
+          ...this.filterParams,
+          ...this.custParams,
+        };
         IDM.datasource.request(
           dataSource.id,
           {
             moduleObject: this.moduleObject,
-            param: {
-              subjectId: IDM.url.queryString("subjectId"),
-            },
+            param,
           },
           (res) => {
             console.log(res, "知识时间轴接口返回结果");
-            this.infoList = res;
+            this.loadMore = false;
+            this.infoList = [...this.infoList, ...res.list];
+            let length = 0;
+            this.infoList.forEach((item) => {
+              length += item.list.length;
+            });
+            this.infoListLength = length
+            this.loadFinish = length >= res.total;
           },
           (res) => {
             console.log(res, "请求失败");
@@ -513,6 +608,8 @@ export default {
                 arr.includes(messageData.badgeType) ||
                 this.dataSourceRefresh.includes(messageData.badgeType)
               ) {
+                this.infoList = [];
+                this.infoListLength = 0;
                 this.initData();
               }
             }
@@ -520,6 +617,15 @@ export default {
           break;
         case "linkageReload":
           this.propDataWatchHandle();
+          break;
+        case "linkageResult":
+          this.filterParams[messageObject.messageKey] =
+            typeof messageObject.message === "object"
+              ? messageObject.message.value
+              : messageObject.message;
+          this.infoList = [];
+          this.infoListLength = 0;
+          this.initData();
           break;
       }
     },
@@ -578,6 +684,13 @@ export default {
   color: #666666;
   padding: 10px;
 
+  .i-know-time-axis-more {
+    text-align: center;
+    margin: 14px 0;
+    height: 32px;
+    line-height: 32px;
+  }
+
   .time-axis-section {
     display: flex;
     width: 100%;
@@ -599,6 +712,7 @@ export default {
         position: relative;
         // border-left: 1px solid #d8d8d8;
         padding-top: 20px;
+        cursor: pointer;
 
         &.frist {
           padding-top: 0;
@@ -655,6 +769,16 @@ export default {
           color: #333333;
           font-weight: 600;
           margin-bottom: 20px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        .section-item-desc {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          -webkit-line-clamp: 3;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
         }
         .section-item-field {
           margin-top: 14px;
@@ -694,8 +818,7 @@ export default {
                 margin-right: 0;
               }
             }
-
-            .type-icon {
+            .type-btn {
               &.active {
                 color: #0079ff;
               }

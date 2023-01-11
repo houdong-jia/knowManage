@@ -19,7 +19,7 @@
           v-for="(item, i) in col"
           :key="i"
           :class="{ emtpy: item.emtpy }"
-          @click="propData.bottomContent == 'label' ? cardClick(item) : ''"
+          @click="cardClick(item)"
         >
           <template v-if="!item.emtpy">
             <div
@@ -30,26 +30,14 @@
               <span class="item-top-view"
                 ><svg-icon icon-class="view" />{{ item.view }}</span
               >
-              <span class="item-top-num" v-if="propData.showNum"
-                ><span>{{ item.num }}</span
-                >专题知识</span
-              >
             </div>
             <div class="item-bottom">
               <div
                 class="item-bottom-label"
-                v-if="propData.bottomContent == 'label'"
               >
                 <span v-for="(label, l) in item.label.split(',')" :key="l">{{
                   label
                 }}</span>
-              </div>
-              <div
-                class="item-bottom-enter"
-                v-if="propData.bottomContent == 'button'"
-                @click.stop="cardClick(item)"
-              >
-                {{ propData.buttonText }}
               </div>
             </div>
           </template>
@@ -158,9 +146,6 @@ export default {
       moduleObject: {},
       propData: this.$root.propData.compositeAttr || {
         colRow: 7,
-        showNum: true,
-        bottomContent: "button",
-        buttonText: "进入查看",
       },
       cardList: [],
       // 数据源刷新key

@@ -25,11 +25,20 @@
           slot="tab"
           class="i-common-tab-icon"
           :class="{ 'ant-tabs-tab-divider': propData.tabShowDivider }"
+          forceRender
         >
-          <img v-if="tab.icon" :src="IDM.url.getWebPath(tab.icon)" />
-          <img v-else src="../assets/default_tab.png" />
+          <template v-if="propData.leftIcon">
+            <img v-if="tab.icon" :src="IDM.url.getWebPath(tab.icon)" />
+            <img v-else src="../assets/default_tab.png" />
+          </template>
           {{ tab.title }}
         </span>
+        <div
+          class="drag_container"
+          idm-ctrl-inner
+          :idm-ctrl-id="moduleObject.id"
+          idm-container-index="1"
+        ></div>
       </knowmanage-a-tab-pane>
     </knowmanage-a-tabs>
   </div>
@@ -83,11 +92,13 @@ export default {
           inputVal: 0,
           selectVal: "px",
         },
+        dragContainer: false,
+        leftIcon: true,
       },
       tabList: [],
       // 数据源刷新key
       dataSourceRefresh: [],
-      activeKey:""
+      activeKey: "",
     };
   },
   props: {},
@@ -129,7 +140,7 @@ export default {
         this.propData.linkageComponent.forEach((item) => {
           rangeModule.push(item.moduleId);
         });
-        console.log(rangeModule,"发送")
+        console.log(rangeModule, "发送");
         IDM.broadcast.send({
           type: "sendActiveTab",
           message: {
@@ -151,12 +162,9 @@ export default {
     /**
      * 初始化变量
      */
-    initPropData(){
+    initPropData() {
       // 数据源解析
-      if (
-        this.propData.dataSource &&
-        this.propData.dataSource[0]
-      ) {
+      if (this.propData.dataSource && this.propData.dataSource[0]) {
         this.dataSourceRefresh = [];
         const refreshJson = this.propData.dataSource[0].refreshJson;
         refreshJson &&
@@ -448,20 +456,21 @@ export default {
           (res) => {
             console.log(res, "接口返回结果");
             this.tabList = res;
-            if(this.tabList.length>0){
-              const defaultType = IDM.url.queryObject() && IDM.url.queryObject().type;
-              let flag = true
-              if(defaultType){
-                this.tabList.forEach(item=>{
-                  if(item.id === defaultType){
-                    this.activeKey = item.id
-                    flag = false
+            if (this.tabList.length > 0) {
+              const defaultType =
+                IDM.url.queryObject() && IDM.url.queryObject().type;
+              let flag = true;
+              if (defaultType) {
+                this.tabList.forEach((item) => {
+                  if (item.id === defaultType) {
+                    this.activeKey = item.id;
+                    flag = false;
                     this.linkageHandler(item.id);
                   }
-                })
+                });
               }
-              if(!defaultType || flag){
-                this.activeKey = this.tabList[0].id
+              if (!defaultType || flag) {
+                this.activeKey = this.tabList[0].id;
                 this.linkageHandler(this.tabList[0].id);
               }
             }

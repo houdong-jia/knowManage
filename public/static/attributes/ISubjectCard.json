@@ -1,7 +1,7 @@
 {
-  "classId": "idm.component.knowmanage.iknowcard",
-  "comName": "知识卡片",
-  "className": "IKnowCard",
+  "classId": "idm.component.knowmanage.isubjectcard",
+  "comName": "专题卡片",
+  "className": "ISubjectCard",
   "comType": "common",
   "comLangue": "vue",
   "compositeAttr": [
@@ -28,12 +28,11 @@
           "default": 7
         },
         {
-            "type": "actionSelect",
-            "layoutType": "block",
-            "text": "点击时动作",
-            "bindKey": "clickFunction",
-            "desc": "点击的时候会调用设置的自定义函数，接收参数为格式为{customParam:自定义的}",
-            "multiple": true
+          "type": "input",
+          "layoutType": "inline",
+          "text": "按钮文本",
+          "bindKey": "buttonText",
+          "default": "进入查看"
         }
       ]
     },
@@ -390,30 +389,56 @@
       "desc": "点击？查看高级设置用法指南",
       "children": [
         {
-          "type": "dataSourceSelect",
-          "layoutType": "inline",
-          "text": "数据源",
-          "desc": "页签数据的数据源",
-          "bindKey": "dataSource"
-        },
-        {
-          "type": "select",
-          "layoutType": "inline",
-          "text": "刷新KEY",
-          "bindKey": "messageRefreshKey",
-          "desc": "根据组件接收到的消息KEY来刷新数据",
-          "default": "",
-          "multiple": true,
-          "placeholder": "示例：tab",
-          "ctrlAttrObject": {
-            "mode": "tags"
-          },
-          "dictionary": [
+          "type": "group",
+          "text": "字段设置",
+          "children": [
             {
-              "label": "tab",
-              "value": "tab"
+              "type": "input",
+              "layoutType": "inline",
+              "text": "列表字段",
+              "bindKey": "listData",
+              "desc": "列表数据的字段，当分页组件或者其他组件传递结果值为对象时，根据此字段值获取列表数据",
+              "default": "list"
+            },
+            {
+              "type": "dataSourceFiledSelect",
+              "layoutType": "inline",
+              "text": "标题",
+              "bindKey": "dataFieldTitle",
+              "default": "title",
+              "ctrlAttrObject": {
+                "dataSourceBindkey": "dataSource"
+              }
+            },
+            {
+              "type": "dataSourceFiledSelect",
+              "layoutType": "inline",
+              "text": "查看数量",
+              "bindKey": "dataFieldView",
+              "default": "view",
+              "ctrlAttrObject": {
+                "dataSourceBindkey": "dataSource"
+              }
+            },
+            {
+              "type": "dataSourceFiledSelect",
+              "layoutType": "inline",
+              "text": "知识数量",
+              "bindKey": "dataFieldNum",
+              "default": "num",
+              "ctrlAttrObject": {
+                "dataSourceBindkey": "dataSource"
+              }
             }
           ]
+        },
+        {
+          "type": "actionSelect",
+          "layoutType": "block",
+          "text": "点击时动作",
+          "bindKey": "clickFunction",
+          "desc": "点击的时候会调用设置的自定义函数，接收参数为格式为{customParam:自定义的}",
+          "multiple": true
         }
       ]
     }
