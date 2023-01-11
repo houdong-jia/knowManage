@@ -303,7 +303,17 @@
               "type": "box",
               "layoutType": "block",
               "text": "内外边距",
-              "bindKey": "box"
+              "bindKey": "box",
+              "default": {
+                "marginTopVal": "0px",
+                "marginRightVal": "15px",
+                "marginBottomVal": "0px",
+                "marginLeftVal": "15px",
+                "paddingTopVal": "0px",
+                "paddingRightVal": "0px",
+                "paddingBottomVal": "0px",
+                "paddingLeftVal": "0px"
+              }
             },
             {
               "type": "inputNumber",
@@ -681,14 +691,14 @@
           "text": "内外边距",
           "bindKey": "itemBox",
           "default": {
-            "marginTopVal": "20px",
-            "marginRightVal": "10px",
-            "marginBottomVal": "20px",
-            "marginLeftVal": "10px",
-            "paddingTopVal": "0px",
-            "paddingRightVal": "10px",
-            "paddingBottomVal": "0px",
-            "paddingLeftVal": "10px"
+            "marginTopVal": "0px",
+            "marginRightVal": "0px",
+            "marginBottomVal": "0px",
+            "marginLeftVal": "0px",
+            "paddingTopVal": "20px",
+            "paddingRightVal": "0px",
+            "paddingBottomVal": "20px",
+            "paddingLeftVal": "0px"
           }
         },
         {
@@ -884,14 +894,14 @@
           "text": "标题内外边距",
           "bindKey": "itemTitleBox",
           "default": {
-            "marginTopVal": "20px",
-            "marginRightVal": "10px",
-            "marginBottomVal": "20px",
-            "marginLeftVal": "10px",
+            "marginTopVal": "0px",
+            "marginRightVal": "0px",
+            "marginBottomVal": "10px",
+            "marginLeftVal": "0px",
             "paddingTopVal": "0px",
-            "paddingRightVal": "10px",
+            "paddingRightVal": "0px",
             "paddingBottomVal": "0px",
-            "paddingLeftVal": "10px"
+            "paddingLeftVal": "0px"
           }
         },
         {
@@ -900,14 +910,14 @@
           "text": "内容内外边距",
           "bindKey": "itemContentBox",
           "default": {
-            "marginTopVal": "20px",
-            "marginRightVal": "10px",
-            "marginBottomVal": "20px",
-            "marginLeftVal": "10px",
+            "marginTopVal": "5px",
+            "marginRightVal": "0px",
+            "marginBottomVal": "0px",
+            "marginLeftVal": "0px",
             "paddingTopVal": "0px",
-            "paddingRightVal": "10px",
+            "paddingRightVal": "0px",
             "paddingBottomVal": "0px",
-            "paddingLeftVal": "10px"
+            "paddingLeftVal": "0px"
           }
         },
         {
