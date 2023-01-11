@@ -248,14 +248,6 @@
               "type": "dataSourceSelect",
               "layoutType": "inline",
               "text": "数据源",
-              "desc": "用于选择点击时触发的数据源",
-              "bindKey": "dataSource",
-              "display": "@[clickType=='dataSource']"
-            },
-            {
-              "type": "dataSourceSelect",
-              "layoutType": "inline",
-              "text": "数据源",
               "desc": "用于选择点击时触发的数据源，携带参数点击时的当前项数据，对象名item",
               "bindKey": "dataSource",
               "display": "@[clickType=='dataSource']"
