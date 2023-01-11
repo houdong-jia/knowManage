@@ -14,7 +14,7 @@
                                     <span>取消关注</span>
                                 </div>
                                 <div @click="care" v-else class="care flex_center">                     
-                                    <span>取消关注</span>
+                                    <span>关注</span>
                                 </div>
                             </div>
                         </div>
