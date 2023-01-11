@@ -205,7 +205,8 @@
               "desc": "在数据中每项对象中的取值字段",
               "default": "发布时间：@[publishDate]",
               "bindKey": "textFiled",
-              "placeholder": "示例：发布时间：@[publishDate] 或 publishDate"
+              "placeholder": "示例：发布时间：@[publishDate] 或 publishDate",
+              "defaultValRegExp": false
             },
             {
               "type": "input",
