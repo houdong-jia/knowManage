@@ -86,6 +86,7 @@ const devResult = () => {
       viewTimes: '509',
       praiseTimes: '18',
       commentTimes: '4',
+      isPublished: true
     })
   }
   arr[1].update = 1
@@ -109,7 +110,8 @@ export default {
         extraList: [{
           textFiled: '发布时间：@[publishDate]',
           key: 'publishDate',
-          position: 'left'
+          position: 'left',
+          compareField: 'isPublished'
         },{
           textFiled: 'viewTimes',
           key: 'viewTimes',
@@ -166,7 +168,7 @@ export default {
           }
         }, (data) => {
           if (extra.callbackType == 'compareChange' && extra.compareField) {
-            item[extra.compareField] == extra.compareChangeValue || !item[extra.compareField]
+            item[extra.compareField] = extra.compareChangeValue || !item[extra.compareField]
             this.$set(this.data, index, item)
           } else if (extra.callbackType == 'customFunction') {
             this.customFunctionHandle(extra.callbackCustomFunction, {
