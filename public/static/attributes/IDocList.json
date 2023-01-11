@@ -202,10 +202,10 @@
               "type": "input",
               "layoutType": "inline",
               "text": "取值字段",
-              "desc": "在数据中每项对象中的取值字段",
+              "desc": "在数据中每项对象中的取值字段，取值字段请用@[]包裹",
               "default": "发布时间：@[publishDate]",
               "bindKey": "textFiled",
-              "placeholder": "示例：发布时间：@[publishDate] 或 publishDate",
+              "placeholder": "示例：发布时间：@[publishDate] 或 关注",
               "defaultValRegExp": false
             },
             {
@@ -229,10 +229,14 @@
             {
               "type": "select",
               "layoutType": "inline",
-              "text": "点击类型",
+              "text": "点击事件",
               "desc": "用于设置当前额外元素被点击时，应该触发的事件",
               "bindKey": "clickType",
               "dictionary": [
+                {
+                  "label": "无响应",
+                  "value": "none"
+                },
                 {
                   "label": "数据源",
                   "value": "dataSource"
@@ -242,7 +246,7 @@
                   "value": "customFunction"
                 }
               ],
-              "default": "dataSource"
+              "default": "none"
             },
             {
               "type": "dataSourceSelect",
@@ -303,17 +307,7 @@
               "type": "box",
               "layoutType": "block",
               "text": "内外边距",
-              "bindKey": "box",
-              "default": {
-                "marginTopVal": "0px",
-                "marginRightVal": "15px",
-                "marginBottomVal": "0px",
-                "marginLeftVal": "15px",
-                "paddingTopVal": "0px",
-                "paddingRightVal": "0px",
-                "paddingBottomVal": "0px",
-                "paddingLeftVal": "0px"
-              }
+              "bindKey": "box"
             },
             {
               "type": "inputNumber",
@@ -345,15 +339,7 @@
               "layoutType": "block",
               "text": "文字样式",
               "desc": "此元素文字样式设置",
-              "bindKey": "extrafont",
-              "default": {
-                "fontColors": {
-                  "hex8": "#999999FF",
-                  "hex": "#999999"
-                },
-                "fontSize": 14,
-                "fontSizeUnit": "px"
-              }
+              "bindKey": "extrafont"
             }
           ]
         }

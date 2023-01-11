@@ -56,7 +56,7 @@
                 </svg>
               </div>
               <div class="text">
-                {{extra.textFiled.includes("@[") ? IDM.express.replace(extra.textFiled, item, true) : getExpressData('data', extra.textFiled, item)}}
+                {{extra.textFiled.includes("@[") ? IDM.express.replace(extra.textFiled, item, true) : extra.textFiled}}
               </div>
             </div>
           </template>
