@@ -858,7 +858,7 @@
                     "layoutType": "block",
                     "text": "点击关注动作",
                     "bindKey": "clickFunctionCare",
-                    "desc": "点击的时候会调用设置的自定义函数，接收参数为格式为{...自定义的}",
+                    "desc": "点击的时候会调用设置的自定义函数，接收参数为格式为{...自定义的}。刷新组件数据可调用组件内部的reloadPageContainer方法通知分页组件进行数据刷新",
                     "multiple": true
                 },
                 {
@@ -866,8 +866,22 @@
                     "layoutType": "block",
                     "text": "点击取消关注动作",
                     "bindKey": "clickFunctionCancel",
-                    "desc": "点击的时候会调用设置的自定义函数，接收参数为格式为{...自定义的}",
+                    "desc": "点击的时候会调用设置的自定义函数，接收参数为格式为{...自定义的}。刷新组件数据可调用组件内部的reloadPageContainer方法通知分页组件进行数据刷新",
                     "multiple": true
+                },
+                {
+                    "type": "group",
+                    "text": "联动组件",
+                    "desc": "当触发关注和取消关注操作时，需要更新分页数据时要联动的组件",
+                    "children": [
+                        {
+                            "type": "pageModuleSelect",
+                            "layoutType": "block",
+                            "text": "组件范围",
+                            "bindKey": "linkageReloadPageModule",
+                            "multiple": true
+                        }
+                    ]
                 }
             ]
         }

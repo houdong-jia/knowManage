@@ -80,6 +80,13 @@
       "className": "IMyCare",
       "comType": "common",
       "comLangue": "vue"
+    },
+    {
+      "classId": "idm.component.knowmanage.docList",
+      "comName": "文档列表",
+      "className": "IDocList",
+      "comType": "common",
+      "comLangue": "vue"
     }
   ]
 }

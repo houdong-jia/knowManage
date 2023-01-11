@@ -83,6 +83,19 @@ export default {
                 return IDM.url.getModuleAssetsWebPath(require(`../assets/default_avatar.png`),this.moduleObject)
             }
         },
+        reloadPageContainer() {
+            if(this.propData.linkageReloadPageModule&&this.propData.linkageReloadPageModule.length>0){
+                let moduleIdArray = [];
+                this.propData.linkageReloadPageModule.forEach(item=>{moduleIdArray.push(item.moduleId)});
+                this.sendBroadcastMessage({
+                    type:"linkageReload",
+                    message: {
+                        reloadFirstPage: false
+                    },
+                    rangeModule: moduleIdArray
+                })
+            }
+        },
         care() {
             if( this.moduleObject.env=="develop" ){
                 return;
@@ -189,9 +202,11 @@ export default {
                     //这里是请求失败的返回结果
                     console.log('error',error)
                 })
-            } else {
+            } else if ( this.moduleObject.env == 'develop' ) {
                 that.data_list = getGridData()
                 that.changeLines()
+            } else {
+                that.data_list = [];
             }
         },
         changeLines() {
@@ -551,7 +566,7 @@ export default {
                 if ( Array.isArray(object.message) ) {
                     this.data_list = object.message;
                 } else if ( object.message ) {
-                    this.data_list = object.message[this.propData.listData ? this.propData.listData : 'list'];
+                    this.data_list = this.getExpressData('resultData',this.propData.listData,object.message);
                 }
             }
         },
